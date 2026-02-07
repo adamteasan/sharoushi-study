@@ -1,0 +1,2730 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>社労士試験 学習管理システム Pro</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', Arial, sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .main-container {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 10px;
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+    }
+    
+    .tab-btn {
+      flex: 1;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.3);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .tab-btn.active {
+      background: white;
+      color: #667eea;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      transform: translateY(-2px);
+    }
+    
+    .tab-btn:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.4);
+    }
+    
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.3s;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    /* タイマーセクション */
+    .timer-container {
+      max-width: 500px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    h1 {
+      text-align: center;
+      color: #667eea;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+    
+    .date-display {
+      text-align: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 25px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    
+    .subject-select {
+      margin-bottom: 25px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #555;
+      font-size: 16px;
+    }
+    
+    select, input[type="date"], input[type="text"] {
+      width: 100%;
+      padding: 14px;
+      font-size: 17px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      background: white;
+      cursor: pointer;
+      transition: border-color 0.3s;
+    }
+    
+    input[type="text"] {
+      text-align: center;
+      font-family: 'Courier New', monospace;
+    }
+    
+    select:focus, input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    .timer-display {
+      text-align: center;
+      font-size: 72px;
+      font-weight: bold;
+      color: #667eea;
+      margin: 40px 0;
+      font-family: 'Courier New', monospace;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+    
+    button {
+      padding: 16px;
+      font-size: 17px;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .controls button {
+      flex: 1;
+    }
+    
+    .start-btn {
+      background: #10b981;
+      color: white;
+    }
+    
+    .start-btn:hover:not(:disabled) {
+      background: #059669;
+      transform: translateY(-2px);
+    }
+    
+    .start-btn:disabled {
+      background: #d1d5db;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .stop-btn {
+      background: #ef4444;
+      color: white;
+    }
+    
+    .stop-btn:hover:not(:disabled) {
+      background: #dc2626;
+      transform: translateY(-2px);
+    }
+    
+    .stop-btn:disabled {
+      background: #d1d5db;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .reset-btn {
+      background: #6b7280;
+      color: white;
+    }
+    
+    .reset-btn:hover {
+      background: #4b5563;
+      transform: translateY(-2px);
+    }
+    
+    .elapsed-info {
+      text-align: center;
+      color: #666;
+      margin-bottom: 20px;
+      font-size: 16px;
+      min-height: 24px;
+    }
+    
+    .record-btn {
+      width: 100%;
+      padding: 18px;
+      background: #667eea;
+      color: white;
+      font-size: 19px;
+      font-weight: bold;
+    }
+    
+    .record-btn:hover:not(:disabled) {
+      background: #5568d3;
+      transform: translateY(-2px);
+    }
+    
+    .record-btn:disabled {
+      background: #d1d5db;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .message {
+      text-align: center;
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: bold;
+      display: none;
+    }
+    
+    .message.success {
+      background: #d1fae5;
+      color: #065f46;
+      display: block;
+    }
+    
+    .message.error {
+      background: #fee2e2;
+      color: #991b1b;
+      display: block;
+    }
+    
+    .helper-text {
+      font-size: 13px;
+      color: #666;
+      margin-top: 5px;
+      text-align: center;
+    }
+    
+    /* スプレッドシートセクション */
+    .sheet-container {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    .sheet-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    
+    .total-display {
+      background: linear-gradient(135deg, #203864 0%, #1e3a5f 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .total-label {
+      font-size: 16px;
+      opacity: 0.9;
+      margin-bottom: 8px;
+    }
+    
+    .total-time {
+      font-size: 48px;
+      font-weight: bold;
+      font-family: 'Courier New', monospace;
+    }
+    
+    .sheet-wrapper {
+      overflow-x: auto;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+    
+    .sheet-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      font-size: 14px;
+    }
+    
+    .sheet-table thead {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    
+    .sheet-table th {
+      background: #4472C4;
+      color: white;
+      padding: 12px 8px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 12px;
+      border: 1px solid #365a9e;
+      min-width: 80px;
+    }
+    
+    .sheet-table th.subject-col {
+      min-width: 90px;
+      background: #70AD47;
+      border: 1px solid #5a8c38;
+    }
+    
+    .sheet-table th.total-col {
+      min-width: 80px;
+      background: #FFC000;
+      border: 1px solid #d9a200;
+    }
+    
+    .sheet-table td {
+      padding: 8px;
+      text-align: center;
+      border: 1px solid #e0e0e0;
+    }
+    
+    .sheet-table .date-cell {
+      font-weight: bold;
+    }
+    
+    .sheet-table .weekday-sat {
+      color: #0000FF;
+    }
+    
+    .sheet-table .weekday-sun {
+      color: #FF0000;
+    }
+    
+    .sheet-table .shift-early {
+      background: #87CEEB;
+    }
+    
+    .sheet-table .shift-rest {
+      background: #F4B084;
+    }
+    
+    .sheet-table .shift-late {
+      background: #FFB6C1;
+    }
+    
+    .sheet-table input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      text-align: center;
+      font-family: 'Courier New', monospace;
+      padding: 4px;
+      font-size: 14px;
+    }
+    
+    .sheet-table input:focus {
+      outline: 2px solid #667eea;
+      background: #fff;
+      border-radius: 4px;
+    }
+    
+    /* 勉強時間がある場合、濃い背景色 */
+    .sheet-table input.has-value {
+      background: #2d5a9e !important;
+      color: white;
+      font-weight: bold;
+    }
+    
+    .sheet-table .shift-early input.has-value {
+      background: #1e90ff !important;
+    }
+    
+    .sheet-table .shift-rest input.has-value {
+      background: #d2691e !important;
+    }
+    
+    .sheet-table .shift-late input.has-value {
+      background: #c71585 !important;
+    }
+    
+    .sheet-table .total-cell {
+      background: #FFF2CC;
+      font-weight: bold;
+      font-family: 'Courier New', monospace;
+    }
+    
+    .sheet-table .summary-row {
+      background: #E7E6E6;
+      font-weight: bold;
+    }
+    
+    /* 記録ログセクション */
+    .log-container {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    .log-table-wrapper {
+      overflow-x: auto;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+    
+    .log-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+    
+    .log-table thead {
+      background: #667eea;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+    
+    .log-table th {
+      padding: 15px;
+      text-align: left;
+      font-weight: bold;
+      font-size: 15px;
+    }
+    
+    .log-table td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .log-table tbody tr:hover {
+      background: #f9fafb;
+    }
+    
+    .log-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .edit-btn, .delete-btn {
+      padding: 6px 12px;
+      font-size: 13px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    
+    .edit-btn {
+      background: #3b82f6;
+      color: white;
+    }
+    
+    .edit-btn:hover {
+      background: #2563eb;
+    }
+    
+    .delete-btn {
+      background: #ef4444;
+      color: white;
+    }
+    
+    .delete-btn:hover {
+      background: #dc2626;
+    }
+    
+    /* モーダル */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .modal.active {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+    }
+    
+    .modal-title {
+      font-size: 24px;
+      font-weight: bold;
+      color: #667eea;
+      margin-bottom: 20px;
+    }
+    
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .modal-buttons button {
+      flex: 1;
+    }
+    
+    /* 統計分析セクション */
+    .stats-container {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      transition: transform 0.3s;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .stat-label {
+      font-size: 14px;
+      opacity: 0.9;
+      margin-bottom: 8px;
+    }
+    
+    .stat-value {
+      font-size: 32px;
+      font-weight: bold;
+      font-family: 'Courier New', monospace;
+    }
+    
+    .goal-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    
+    .goal-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-left: 5px solid #667eea;
+    }
+    
+    .goal-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #374151;
+      margin-bottom: 15px;
+    }
+    
+    .goal-stat {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .goal-label {
+      color: #6b7280;
+      font-size: 14px;
+    }
+    
+    .goal-value {
+      font-size: 20px;
+      font-weight: bold;
+      color: #667eea;
+      font-family: 'Courier New', monospace;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    
+    .status-ahead {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    
+    .status-behind {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    
+    .status-ontrack {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    
+    .chart-section {
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+    
+    .chart-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #374151;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .chart-canvas {
+      width: 100%;
+      height: 300px;
+      background: white;
+      border-radius: 8px;
+      padding: 15px;
+    }
+    
+    .subject-breakdown {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    
+    .subject-item {
+      background: white;
+      border-radius: 8px;
+      padding: 15px;
+      border-left: 4px solid #667eea;
+    }
+    
+    .subject-name {
+      font-weight: bold;
+      color: #374151;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .subject-target {
+      font-size: 12px;
+      color: #6b7280;
+      background: #f3f4f6;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+    
+    .subject-stats {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .subject-time {
+      font-size: 24px;
+      font-weight: bold;
+      color: #667eea;
+      font-family: 'Courier New', monospace;
+    }
+    
+    .subject-percentage {
+      font-size: 14px;
+      color: #6b7280;
+    }
+    
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+    
+    .insights-section {
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      border-radius: 12px;
+      padding: 25px;
+      border-left: 5px solid #0ea5e9;
+    }
+    
+    .insight-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      margin-bottom: 15px;
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+    }
+    
+    .insight-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    
+    .insight-content h3 {
+      color: #0c4a6e;
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+    
+    .insight-content p {
+      color: #475569;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    .controls-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .export-btn, .clear-btn, .sync-btn {
+      padding: 12px 20px;
+      font-size: 15px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .export-btn {
+      background: #8b5cf6;
+      color: white;
+    }
+    
+    .export-btn:hover {
+      background: #7c3aed;
+      transform: translateY(-2px);
+    }
+    
+    .sync-btn {
+      background: #10b981;
+      color: white;
+    }
+    
+    .sync-btn:hover {
+      background: #059669;
+      transform: translateY(-2px);
+    }
+    
+    .trend-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    
+    .trend-up {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    
+    .trend-down {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    
+    .trend-neutral {
+      background: #e5e7eb;
+      color: #374151;
+    }
+    
+    @media (max-width: 768px) {
+      .timer-display {
+        font-size: 56px;
+      }
+      
+      .stat-value {
+        font-size: 24px;
+      }
+      
+      .sheet-table {
+        font-size: 12px;
+      }
+      
+      .total-time {
+        font-size: 36px;
+      }
+      
+      .chart-canvas {
+        height: 200px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="main-container">
+    <!-- タブ切り替え -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('timer')">⏱️ タイマー</button>
+      <button class="tab-btn" onclick="switchTab('sheet')">📋 スプレッドシート</button>
+      <button class="tab-btn" onclick="switchTab('log')">📝 記録ログ</button>
+      <button class="tab-btn" onclick="switchTab('report')">📊 レポート</button>
+      <button class="tab-btn" onclick="switchTab('stats')">📈 高度な分析</button>
+    </div>
+    
+    <!-- タイマータブ -->
+    <div id="timer-tab" class="tab-content active">
+      <div class="timer-container">
+        <h1>⏱️ 学習タイマー</h1>
+        
+        <div class="date-display" id="dateDisplay">📅 読み込み中...</div>
+        
+        <div class="subject-select">
+          <label for="recordDate">記録する日付</label>
+          <input type="date" id="recordDate">
+        </div>
+        
+        <div class="subject-select">
+          <label for="subject">科目を選択</label>
+          <select id="subject">
+            <option value="">科目を選択してください</option>
+            <option value="労働基準法">労働基準法</option>
+            <option value="労働安全衛生法">労働安全衛生法</option>
+            <option value="労働者災害補償保険法">労働者災害補償保険法</option>
+            <option value="雇用保険法">雇用保険法</option>
+            <option value="労働保険徴収法">労働保険徴収法</option>
+            <option value="健康保険法">健康保険法</option>
+            <option value="国民年金法">国民年金法</option>
+            <option value="厚生年金保険法">厚生年金保険法</option>
+            <option value="社会保険に関する一般常識">社会保険に関する一般常識</option>
+            <option value="労働に関する一般常識">労働に関する一般常識</option>
+            <option value="その他">その他</option>
+          </select>
+        </div>
+        
+        <div class="timer-display" id="timer">00:00:00</div>
+        
+        <div class="subject-select">
+          <label for="manualTime">または時間を直接入力</label>
+          <input type="text" id="manualTime" placeholder="例: 1:30 (1時間30分)">
+          <p class="helper-text">形式: 時:分 (例: 2:15 = 2時間15分)</p>
+        </div>
+        
+        <div class="elapsed-info" id="elapsedInfo"></div>
+        
+        <div class="controls">
+          <button class="start-btn" id="startBtn" onclick="startTimer()">開始</button>
+          <button class="stop-btn" id="stopBtn" onclick="stopTimer()" disabled>停止</button>
+          <button class="reset-btn" id="resetBtn" onclick="resetTimer()">リセット</button>
+        </div>
+        
+        <button class="record-btn" id="recordBtn" onclick="recordTime()">📝 記録する</button>
+        <div class="message" id="message"></div>
+      </div>
+    </div>
+    
+    <!-- スプレッドシートタブ -->
+    <div id="sheet-tab" class="tab-content">
+      <div class="sheet-container">
+        <div class="sheet-header">
+          <h1>📋 学習記録シート</h1>
+          <div class="controls-row">
+            <button class="sync-btn" onclick="syncFromTimer()">🔄 タイマーから同期</button>
+            <button class="export-btn" onclick="exportSheet()">💾 横型CSV</button>
+            <button class="export-btn" onclick="exportOriginalFormat()">📊 縦型CSV</button>
+          </div>
+        </div>
+        
+        <div class="total-display">
+          <div class="total-label">総学習時間</div>
+          <div class="total-time" id="sheetTotalTime">00:00</div>
+        </div>
+        
+        <div class="sheet-wrapper">
+          <table class="sheet-table" id="sheetTable">
+            <thead>
+              <tr id="sheetHeader">
+                <th class="date-col">日付</th>
+                <th class="weekday-col">曜日</th>
+                <th class="remaining-col">残り日数</th>
+                <th class="subject-col">労働基準法</th>
+                <th class="subject-col">労働安全衛生法</th>
+                <th class="subject-col">労災保険法</th>
+                <th class="subject-col">雇用保険法</th>
+                <th class="subject-col">労働保険徴収法</th>
+                <th class="subject-col">健康保険法</th>
+                <th class="subject-col">国民年金法</th>
+                <th class="subject-col">厚生年金保険法</th>
+                <th class="subject-col">社保一般常識</th>
+                <th class="subject-col">労働一般常識</th>
+                <th class="subject-col">その他</th>
+                <th class="total-col">当日合計</th>
+              </tr>
+              <tr class="summary-row">
+                <td colspan="3">科目別合計</td>
+                <td id="sum-0">00:00</td>
+                <td id="sum-1">00:00</td>
+                <td id="sum-2">00:00</td>
+                <td id="sum-3">00:00</td>
+                <td id="sum-4">00:00</td>
+                <td id="sum-5">00:00</td>
+                <td id="sum-6">00:00</td>
+                <td id="sum-7">00:00</td>
+                <td id="sum-8">00:00</td>
+                <td id="sum-9">00:00</td>
+                <td id="sum-10">00:00</td>
+                <td id="sum-total" class="total-cell">00:00</td>
+              </tr>
+            </thead>
+            <tbody id="sheetBody">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 記録ログタブ -->
+    <div id="log-tab" class="tab-content">
+      <div class="log-container">
+        <h1>📝 記録ログ</h1>
+        
+        <div class="log-table-wrapper">
+          <table class="log-table">
+            <thead>
+              <tr>
+                <th>日付</th>
+                <th>記録時刻</th>
+                <th>科目</th>
+                <th>学習時間</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="logTableBody">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+    <!-- レポートタブ -->
+    <div id="report-tab" class="tab-content">
+      <div class="stats-container card">
+        <h1 class="section-title">📊 学習レポート</h1>
+        
+        <!-- 期間選択 -->
+        <div style="display: flex; gap: 12px; margin-bottom: 30px; justify-content: center; flex-wrap: wrap;">
+          <button class="filter-btn active" id="reportBtnToday" onclick="switchReport('today')" style="padding: 12px 24px; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.3s;">📅 今日</button>
+          <button class="filter-btn" id="reportBtnWeek" onclick="switchReport('week')" style="padding: 12px 24px; background: #d1d5db; color: #374151; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.3s;">📅 今週</button>
+          <button class="filter-btn" id="reportBtnMonth" onclick="switchReport('month')" style="padding: 12px 24px; background: #d1d5db; color: #374151; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.3s;">📅 今月</button>
+        </div>
+        
+        <!-- レポート内容 -->
+        <div id="reportContent"></div>
+      </div>
+    </div>
+    
+    <!-- 高度な分析タブ -->
+    <div id="stats-tab" class="tab-content">
+      <div class="stats-container">
+        <h1>📊 高度な学習分析</h1>
+        
+        <!-- 主要統計カード -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">総学習時間</div>
+            <div class="stat-value" id="totalAllTime">00:00</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">今週の学習時間</div>
+            <div class="stat-value" id="weekTime">00:00</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">今月の学習時間</div>
+            <div class="stat-value" id="monthTime">00:00</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">学習日数</div>
+            <div class="stat-value"><span id="studyDays">0</span>日</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">早番平均</div>
+            <div class="stat-value" id="earlyAvg">00:00</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">遅番平均</div>
+            <div class="stat-value" id="lateAvg">00:00</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">休日平均</div>
+            <div class="stat-value" id="restAvg">00:00</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">試験まで</div>
+            <div class="stat-value"><span id="daysToExam">0</span>日</div>
+          </div>
+        </div>
+        
+        <!-- 目標達成カード -->
+        <div class="goal-cards">
+          <div class="goal-card">
+            <div class="goal-title">🎯 800時間目標</div>
+            <div class="goal-stat">
+              <span class="goal-label">達成率</span>
+              <span class="goal-value" id="goal800Progress">0%</span>
+            </div>
+            <div style="margin: 15px 0; padding: 15px; background: #f9fafb; border-radius: 8px;">
+              <div style="font-size: 13px; font-weight: bold; color: #374151; margin-bottom: 10px;">必要ペース</div>
+              <div style="display: grid; gap: 8px;">
+                <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                  <span style="color: #6b7280;">早番:</span>
+                  <span id="goal800EarlyPace" style="font-family: 'Courier New', monospace; font-weight: bold; color: #667eea;">00:00</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                  <span style="color: #6b7280;">遅番:</span>
+                  <span id="goal800LatePace" style="font-family: 'Courier New', monospace; font-weight: bold; color: #667eea;">00:00</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                  <span style="color: #6b7280;">休日:</span>
+                  <span id="goal800RestPace" style="font-family: 'Courier New', monospace; font-weight: bold; color: #667eea;">00:00</span>
+                </div>
+              </div>
+            </div>
+            <div id="goal800Status"></div>
+          </div>
+          
+          <div class="goal-card">
+            <div class="goal-title">🎯 1000時間目標</div>
+            <div class="goal-stat">
+              <span class="goal-label">達成率</span>
+              <span class="goal-value" id="goal1000Progress">0%</span>
+            </div>
+            <div style="margin: 15px 0; padding: 15px; background: #f9fafb; border-radius: 8px;">
+              <div style="font-size: 13px; font-weight: bold; color: #374151; margin-bottom: 10px;">必要ペース</div>
+              <div style="display: grid; gap: 8px;">
+                <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                  <span style="color: #6b7280;">早番:</span>
+                  <span id="goal1000EarlyPace" style="font-family: 'Courier New', monospace; font-weight: bold; color: #667eea;">00:00</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                  <span style="color: #6b7280;">遅番:</span>
+                  <span id="goal1000LatePace" style="font-family: 'Courier New', monospace; font-weight: bold; color: #667eea;">00:00</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                  <span style="color: #6b7280;">休日:</span>
+                  <span id="goal1000RestPace" style="font-family: 'Courier New', monospace; font-weight: bold; color: #667eea;">00:00</span>
+                </div>
+              </div>
+            </div>
+            <div id="goal1000Status"></div>
+          </div>
+          
+          <div class="goal-card">
+            <div class="goal-title">🎯 1200時間目標</div>
+            <div class="goal-stat">
+              <span class="goal-label">達成率</span>
+              <span class="goal-value" id="goal1200Progress">0%</span>
+            </div>
+            <div style="margin: 15px 0; padding: 15px; background: #f9fafb; border-radius: 8px;">
+              <div style="font-size: 13px; font-weight: bold; color: #374151; margin-bottom: 10px;">必要ペース</div>
+              <div style="display: grid; gap: 8px;">
+                <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                  <span style="color: #6b7280;">早番:</span>
+                  <span id="goal1200EarlyPace" style="font-family: 'Courier New', monospace; font-weight: bold; color: #667eea;">00:00</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                  <span style="color: #6b7280;">遅番:</span>
+                  <span id="goal1200LatePace" style="font-family: 'Courier New', monospace; font-weight: bold; color: #667eea;">00:00</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                  <span style="color: #6b7280;">休日:</span>
+                  <span id="goal1200RestPace" style="font-family: 'Courier New', monospace; font-weight: bold; color: #667eea;">00:00</span>
+                </div>
+              </div>
+            </div>
+            <div id="goal1200Status"></div>
+          </div>
+        </div>
+        
+        <!-- 科目別内訳 -->
+        <div class="chart-section">
+          <div class="chart-title">
+            <span>📚</span>
+            <span>科目別学習時間</span>
+          </div>
+          <div id="subjectBreakdown" class="subject-breakdown"></div>
+        </div>
+        
+        <!-- 学習トレンド -->
+        <div class="chart-section">
+          <div class="chart-title">
+            <span>📈</span>
+            <span>学習トレンド (直近30日)</span>
+            <span id="trendIndicator"></span>
+          </div>
+          <div class="chart-canvas">
+            <canvas id="trendChart"></canvas>
+          </div>
+        </div>
+        
+        <!-- 曜日別・科目別分析 -->
+        <div class="chart-section">
+          <div class="chart-title">
+            <span>📅</span>
+            <span>曜日別・科目別学習パターン</span>
+          </div>
+          <div style="display: flex; gap: 10px; margin-bottom: 20px; justify-content: center;">
+            <button class="filter-btn" id="weekdayBtn1Week" onclick="updateWeekdayChartPeriod('week')" style="padding: 8px 16px; background: #6366f1; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">直近1週間</button>
+            <button class="filter-btn" id="weekdayBtn1Month" onclick="updateWeekdayChartPeriod('month')" style="padding: 8px 16px; background: #d1d5db; color: #374151; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">直近1ヶ月</button>
+            <button class="filter-btn active" id="weekdayBtnAll" onclick="updateWeekdayChartPeriod('all')" style="padding: 8px 16px; background: #d1d5db; color: #374151; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">全期間</button>
+          </div>
+          <div class="chart-canvas">
+            <canvas id="weekdayChart"></canvas>
+          </div>
+        </div>
+        
+        <!-- インサイト -->
+        <div class="insights-section">
+          <div class="chart-title">
+            <span>💡</span>
+            <span>学習インサイト</span>
+          </div>
+          <div id="insights"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 編集モーダル -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-title">記録を編集</div>
+      <div class="subject-select">
+        <label for="editDate">日付</label>
+        <input type="date" id="editDate">
+      </div>
+      <div class="subject-select">
+        <label for="editSubject">科目</label>
+        <select id="editSubject">
+          <option value="労働基準法">労働基準法</option>
+          <option value="労働安全衛生法">労働安全衛生法</option>
+          <option value="労働者災害補償保険法">労働者災害補償保険法</option>
+          <option value="雇用保険法">雇用保険法</option>
+          <option value="労働保険徴収法">労働保険徴収法</option>
+          <option value="健康保険法">健康保険法</option>
+          <option value="国民年金法">国民年金法</option>
+          <option value="厚生年金保険法">厚生年金保険法</option>
+          <option value="社会保険に関する一般常識">社会保険に関する一般常識</option>
+          <option value="労働に関する一般常識">労働に関する一般常識</option>
+          <option value="その他">その他</option>
+        </select>
+      </div>
+      <div class="subject-select">
+        <label for="editTime">学習時間</label>
+        <input type="text" id="editTime" placeholder="例: 1:30">
+      </div>
+      <div class="modal-buttons">
+        <button class="start-btn" onclick="saveEdit()">保存</button>
+        <button class="reset-btn" onclick="closeEditModal()">キャンセル</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script>
+    // グローバル変数
+    let startTime = null;
+    let elapsedTime = 0;
+    let timerInterval = null;
+    let isPaused = false;
+    let pausedTime = 0;
+    let studyRecords = [];
+    let sheetData = {};
+    let trendChartInstance = null;
+    let weekdayChartInstance = null;
+    let editingIndex = -1;
+    
+    const subjects = [
+      '労働基準法',
+      '労働安全衛生法',
+      '労働者災害補償保険法',
+      '雇用保険法',
+      '労働保険徴収法',
+      '健康保険法',
+      '国民年金法',
+      '厚生年金保険法',
+      '社会保険に関する一般常識',
+      '労働に関する一般常識',
+      'その他'
+    ];
+    
+    // 科目別推定勉強時間（時間）
+    const subjectTargets = {
+      '労働基準法': 120,
+      '労働安全衛生法': 80,
+      '労働者災害補償保険法': 120,
+      '雇用保険法': 120,
+      '労働保険徴収法': 70,
+      '健康保険法': 130,
+      '国民年金法': 150,
+      '厚生年金保険法': 150,
+      '社会保険に関する一般常識': 80,
+      '労働に関する一般常識': 80,
+      'その他': 0
+    };
+    
+    // 科目別の色
+    const subjectColors = [
+      '#667eea', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6',
+      '#ec4899', '#06b6d4', '#f97316', '#14b8a6', '#6366f1', '#84cc16'
+    ];
+    
+    // 初期化
+    window.onload = function() {
+      updateDateDisplay();
+      loadRecords();
+      loadSheetData();
+      generateSheetRows();
+      updateSheetSums();
+      updateLogTable();
+    };
+    
+    // データ読み込み・保存
+    function loadRecords() {
+      const saved = localStorage.getItem('studyRecords');
+      if (saved) {
+        studyRecords = JSON.parse(saved);
+      }
+    }
+    
+    function saveRecords() {
+      localStorage.setItem('studyRecords', JSON.stringify(studyRecords));
+    }
+    
+    function loadSheetData() {
+      const saved = localStorage.getItem('sheetData');
+      if (saved) {
+        sheetData = JSON.parse(saved);
+      }
+    }
+    
+    function saveSheetData() {
+      localStorage.setItem('sheetData', JSON.stringify(sheetData));
+    }
+    
+    // 日付関連
+    function updateDateDisplay() {
+      const today = new Date();
+      const dateStr = today.getFullYear() + '/' + 
+                      String(today.getMonth() + 1).padStart(2, '0') + '/' + 
+                      String(today.getDate()).padStart(2, '0');
+      const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+      const weekday = weekdays[today.getDay()];
+      
+      document.getElementById('dateDisplay').textContent = `📅 ${dateStr} (${weekday})`;
+      
+      const todayISO = today.toISOString().split('T')[0];
+      document.getElementById('recordDate').value = todayISO;
+    }
+    
+    function getShiftType(date) {
+      const shiftStart = new Date('2026-02-06');
+      const restStart = new Date('2026-02-10');
+      const lateStart = new Date('2026-02-12');
+      
+      if (date < shiftStart) return 'late';
+      if (date < restStart) return 'early';
+      if (date < lateStart) return 'rest';
+      
+      const daysSince = Math.floor((date - lateStart) / (1000 * 60 * 60 * 24));
+      const position = daysSince % 12;
+      
+      if (position < 4) return 'late';
+      if (position < 6) return 'rest';
+      if (position < 10) return 'early';
+      return 'rest';
+    }
+    
+    // タブ切り替え
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      document.getElementById(tab + '-tab').classList.add('active');
+      
+      if (tab === 'stats') {
+        updateAdvancedStats();
+      }
+      if (tab === 'sheet') {
+        updateSheetSums();
+      }
+      if (tab === 'log') {
+        updateLogTable();
+      }
+      if (tab === 'report') {
+        updateReport();
+      }
+    }
+    
+    // タイマー機能
+    function startTimer() {
+      const subject = document.getElementById('subject').value;
+      if (!subject) {
+        showMessage('科目を選択してください', 'error');
+        return;
+      }
+      
+      if (isPaused) {
+        startTime = Date.now() - pausedTime;
+        isPaused = false;
+      } else {
+        startTime = Date.now() - elapsedTime;
+      }
+      
+      timerInterval = setInterval(updateTimer, 100);
+      
+      document.getElementById('startBtn').disabled = true;
+      document.getElementById('stopBtn').disabled = false;
+      document.getElementById('subject').disabled = true;
+      hideMessage();
+    }
+    
+    function stopTimer() {
+      clearInterval(timerInterval);
+      pausedTime = Date.now() - startTime;
+      isPaused = true;
+      
+      document.getElementById('startBtn').disabled = false;
+      document.getElementById('stopBtn').disabled = true;
+      
+      updateElapsedInfo();
+    }
+    
+    function resetTimer() {
+      clearInterval(timerInterval);
+      startTime = null;
+      elapsedTime = 0;
+      pausedTime = 0;
+      isPaused = false;
+      
+      document.getElementById('timer').textContent = '00:00:00';
+      document.getElementById('startBtn').disabled = false;
+      document.getElementById('stopBtn').disabled = true;
+      document.getElementById('subject').disabled = false;
+      document.getElementById('elapsedInfo').textContent = '';
+      hideMessage();
+    }
+    
+    function updateTimer() {
+      elapsedTime = Date.now() - startTime;
+      
+      const hours = Math.floor(elapsedTime / 3600000);
+      const minutes = Math.floor((elapsedTime % 3600000) / 60000);
+      const seconds = Math.floor((elapsedTime % 60000) / 1000);
+      
+      document.getElementById('timer').textContent = 
+        pad(hours) + ':' + pad(minutes) + ':' + pad(seconds);
+    }
+    
+    function updateElapsedInfo() {
+      const minutes = Math.floor(elapsedTime / 60000);
+      const hours = (minutes / 60).toFixed(2);
+      document.getElementById('elapsedInfo').textContent = 
+        `経過時間: ${minutes}分 (${hours}時間)`;
+    }
+    
+    function pad(num) {
+      return num.toString().padStart(2, '0');
+    }
+    
+    function recordTime() {
+      const subject = document.getElementById('subject').value;
+      
+      if (!subject) {
+        showMessage('科目を選択してください', 'error');
+        return;
+      }
+      
+      const manualTimeInput = document.getElementById('manualTime').value.trim();
+      let minutes = 0;
+      
+      if (manualTimeInput) {
+        minutes = parseManualTime(manualTimeInput);
+        if (minutes === 0) {
+          showMessage('正しい時間形式で入力してください (例: 1:30)', 'error');
+          return;
+        }
+      } else {
+        minutes = Math.floor(elapsedTime / 60000);
+        if (minutes === 0) {
+          showMessage('1分以上の学習時間を記録してください、または時間を直接入力してください', 'error');
+          return;
+        }
+      }
+      
+      const selectedDate = document.getElementById('recordDate').value;
+      if (!selectedDate) {
+        showMessage('日付を選択してください', 'error');
+        return;
+      }
+      
+      const recordDate = new Date(selectedDate + 'T00:00:00');
+      const now = new Date();
+      const dateKey = selectedDate;
+      
+      const record = {
+        date: dateKey,
+        time: now.toTimeString().split(' ')[0].substring(0, 5),
+        subject: subject,
+        minutes: minutes,
+        weekday: ['日', '月', '火', '水', '木', '金', '土'][recordDate.getDay()]
+      };
+      
+      studyRecords.push(record);
+      saveRecords();
+      
+      if (!sheetData[dateKey]) sheetData[dateKey] = {};
+      if (!sheetData[dateKey][subject]) sheetData[dateKey][subject] = 0;
+      sheetData[dateKey][subject] += minutes;
+      saveSheetData();
+      updateSheetRow(dateKey);
+      updateSheetSums();
+      updateLogTable();
+      
+      const source = manualTimeInput ? '(手動入力)' : '';
+      showMessage(`✅ ${dateKey} ${subject} ${minutes}分を記録しました！ ${source}`, 'success');
+      setTimeout(() => {
+        resetTimer();
+        document.getElementById('manualTime').value = '';
+      }, 2000);
+    }
+    
+    function parseManualTime(input) {
+      const parts = input.split(':');
+      if (parts.length !== 2) return 0;
+      
+      const hours = parseInt(parts[0]);
+      const mins = parseInt(parts[1]);
+      
+      if (isNaN(hours) || isNaN(mins) || hours < 0 || mins < 0 || mins >= 60) {
+        return 0;
+      }
+      
+      return hours * 60 + mins;
+    }
+    
+    // スプレッドシート機能
+    function generateSheetRows() {
+      const tbody = document.getElementById('sheetBody');
+      const startDate = new Date('2026-02-04');
+      const examDate = new Date('2026-08-23');
+      const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+      
+      let html = '';
+      let currentDate = new Date(startDate);
+      
+      while (currentDate <= examDate) {
+        const dateKey = currentDate.toISOString().split('T')[0];
+        const weekday = weekdays[currentDate.getDay()];
+        const remaining = Math.floor((examDate - currentDate) / (1000 * 60 * 60 * 24));
+        const shiftType = getShiftType(currentDate);
+        const shiftClass = `shift-${shiftType}`;
+        
+        let weekdayClass = '';
+        if (weekday === '土') weekdayClass = 'weekday-sat';
+        if (weekday === '日') weekdayClass = 'weekday-sun';
+        
+        html += `<tr data-date="${dateKey}">`;
+        html += `<td class="date-cell ${shiftClass}">${dateKey}</td>`;
+        html += `<td class="${shiftClass} ${weekdayClass}">${weekday}</td>`;
+        html += `<td class="${shiftClass}">${remaining}</td>`;
+        
+        subjects.forEach((subject, idx) => {
+          const value = sheetData[dateKey]?.[subject] || '';
+          const timeStr = value ? minutesToTimeString(value) : '';
+          const hasValueClass = value ? 'has-value' : '';
+          html += `<td class="${shiftClass}"><input type="text" class="${hasValueClass}" data-date="${dateKey}" data-subject="${subject}" value="${timeStr}" onchange="updateSheetCell(this)" placeholder="00:00"></td>`;
+        });
+        
+        html += `<td class="total-cell ${shiftClass}" id="total-${dateKey}">00:00</td>`;
+        html += `</tr>`;
+        
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+      
+      tbody.innerHTML = html;
+      updateAllTotals();
+    }
+    
+    function updateSheetCell(input) {
+      const date = input.dataset.date;
+      const subject = input.dataset.subject;
+      const value = input.value.trim();
+      
+      if (!value) {
+        input.classList.remove('has-value');
+        if (sheetData[date]) delete sheetData[date][subject];
+        saveSheetData();
+        updateSheetRow(date);
+        updateSheetSums();
+        return;
+      }
+      
+      const minutes = timeStringToMinutes(value);
+      if (minutes > 0) {
+        if (!sheetData[date]) sheetData[date] = {};
+        sheetData[date][subject] = minutes;
+        input.value = minutesToTimeString(minutes);
+        input.classList.add('has-value');
+        saveSheetData();
+        updateSheetRow(date);
+        updateSheetSums();
+      } else {
+        input.value = '';
+        input.classList.remove('has-value');
+      }
+    }
+    
+    function updateSheetRow(dateKey) {
+      const row = document.querySelector(`tr[data-date="${dateKey}"]`);
+      if (!row) return;
+      
+      subjects.forEach(subject => {
+        const input = row.querySelector(`input[data-subject="${subject}"]`);
+        const value = sheetData[dateKey]?.[subject] || 0;
+        input.value = value > 0 ? minutesToTimeString(value) : '';
+        if (value > 0) {
+          input.classList.add('has-value');
+        } else {
+          input.classList.remove('has-value');
+        }
+      });
+      
+      updateRowTotal(dateKey);
+    }
+    
+    function updateRowTotal(dateKey) {
+      let total = 0;
+      subjects.forEach(subject => {
+        total += sheetData[dateKey]?.[subject] || 0;
+      });
+      
+      const cell = document.getElementById(`total-${dateKey}`);
+      if (cell) cell.textContent = minutesToTimeString(total);
+    }
+    
+    function updateAllTotals() {
+      const dates = Object.keys(sheetData);
+      dates.forEach(date => updateRowTotal(date));
+    }
+    
+    function updateSheetSums() {
+      const sums = new Array(11).fill(0);
+      let grandTotal = 0;
+      
+      Object.values(sheetData).forEach(dayData => {
+        subjects.forEach((subject, idx) => {
+          const value = dayData[subject] || 0;
+          sums[idx] += value;
+          grandTotal += value;
+        });
+      });
+      
+      subjects.forEach((subject, idx) => {
+        const cell = document.getElementById(`sum-${idx}`);
+        if (cell) cell.textContent = minutesToTimeString(sums[idx]);
+      });
+      
+      const totalCell = document.getElementById('sum-total');
+      if (totalCell) totalCell.textContent = minutesToTimeString(grandTotal);
+      
+      const totalDisplay = document.getElementById('sheetTotalTime');
+      if (totalDisplay) totalDisplay.textContent = minutesToTimeString(grandTotal);
+    }
+    
+    function syncFromTimer() {
+      const tempData = {};
+      studyRecords.forEach(record => {
+        if (!tempData[record.date]) tempData[record.date] = {};
+        if (!tempData[record.date][record.subject]) tempData[record.date][record.subject] = 0;
+        tempData[record.date][record.subject] += record.minutes;
+      });
+      
+      sheetData = tempData;
+      saveSheetData();
+      
+      document.querySelectorAll('#sheetBody input').forEach(input => {
+        const date = input.dataset.date;
+        const subject = input.dataset.subject;
+        const value = sheetData[date]?.[subject] || 0;
+        input.value = value > 0 ? minutesToTimeString(value) : '';
+        if (value > 0) {
+          input.classList.add('has-value');
+        } else {
+          input.classList.remove('has-value');
+        }
+      });
+      
+      updateAllTotals();
+      updateSheetSums();
+      
+      alert('✅ タイマーの記録をシートに同期しました');
+    }
+    
+    // 記録ログ機能
+    function updateLogTable() {
+      const tbody = document.getElementById('logTableBody');
+      
+      if (studyRecords.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #9ca3af;">まだ記録がありません</td></tr>';
+        return;
+      }
+      
+      const sorted = [...studyRecords].reverse();
+      let html = '';
+      
+      sorted.forEach((record, index) => {
+        const actualIndex = studyRecords.length - 1 - index;
+        html += `
+          <tr>
+            <td>${record.date}</td>
+            <td>${record.time}</td>
+            <td style="font-weight: bold;">${record.subject}</td>
+            <td style="font-family: 'Courier New', monospace; color: #667eea; font-weight: bold;">${minutesToTimeString(record.minutes)}</td>
+            <td>
+              <div class="log-actions">
+                <button class="edit-btn" onclick="openEditModal(${actualIndex})">編集</button>
+                <button class="delete-btn" onclick="deleteRecord(${actualIndex})">削除</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+      
+      tbody.innerHTML = html;
+    }
+    
+    function openEditModal(index) {
+      editingIndex = index;
+      const record = studyRecords[index];
+      
+      document.getElementById('editDate').value = record.date;
+      document.getElementById('editSubject').value = record.subject;
+      document.getElementById('editTime').value = minutesToTimeString(record.minutes);
+      
+      document.getElementById('editModal').classList.add('active');
+    }
+    
+    function closeEditModal() {
+      document.getElementById('editModal').classList.remove('active');
+      editingIndex = -1;
+    }
+    
+    function saveEdit() {
+      if (editingIndex === -1) return;
+      
+      const oldRecord = studyRecords[editingIndex];
+      const newDate = document.getElementById('editDate').value;
+      const newSubject = document.getElementById('editSubject').value;
+      const newTime = document.getElementById('editTime').value;
+      const newMinutes = timeStringToMinutes(newTime);
+      
+      if (newMinutes === 0) {
+        alert('正しい時間形式で入力してください');
+        return;
+      }
+      
+      // シートデータから古い記録を削除
+      if (sheetData[oldRecord.date] && sheetData[oldRecord.date][oldRecord.subject]) {
+        sheetData[oldRecord.date][oldRecord.subject] -= oldRecord.minutes;
+        if (sheetData[oldRecord.date][oldRecord.subject] <= 0) {
+          delete sheetData[oldRecord.date][oldRecord.subject];
+        }
+      }
+      
+      // 記録を更新
+      studyRecords[editingIndex] = {
+        date: newDate,
+        time: oldRecord.time,
+        subject: newSubject,
+        minutes: newMinutes,
+        weekday: ['日', '月', '火', '水', '木', '金', '土'][new Date(newDate + 'T00:00:00').getDay()]
+      };
+      
+      // シートデータに新しい記録を追加
+      if (!sheetData[newDate]) sheetData[newDate] = {};
+      if (!sheetData[newDate][newSubject]) sheetData[newDate][newSubject] = 0;
+      sheetData[newDate][newSubject] += newMinutes;
+      
+      saveRecords();
+      saveSheetData();
+      updateSheetRow(oldRecord.date);
+      updateSheetRow(newDate);
+      updateSheetSums();
+      updateLogTable();
+      closeEditModal();
+      
+      alert('✅ 記録を更新しました');
+    }
+    
+    function deleteRecord(index) {
+      if (!confirm('この記録を削除しますか？')) return;
+      
+      const record = studyRecords[index];
+      
+      // シートデータから削除
+      if (sheetData[record.date] && sheetData[record.date][record.subject]) {
+        sheetData[record.date][record.subject] -= record.minutes;
+        if (sheetData[record.date][record.subject] <= 0) {
+          delete sheetData[record.date][record.subject];
+        }
+      }
+      
+      studyRecords.splice(index, 1);
+      saveRecords();
+      saveSheetData();
+      updateSheetRow(record.date);
+      updateSheetSums();
+      updateLogTable();
+      
+      alert('✅ 記録を削除しました');
+    }
+    
+    // 高度な統計分析
+    function updateAdvancedStats() {
+      const totalMinutes = studyRecords.reduce((sum, r) => sum + r.minutes, 0);
+      document.getElementById('totalAllTime').textContent = minutesToTimeString(totalMinutes);
+      
+      // 今週の学習時間
+      const today = new Date();
+      const weekStart = new Date(today);
+      weekStart.setDate(today.getDate() - today.getDay());
+      weekStart.setHours(0, 0, 0, 0);
+      const weekMinutes = studyRecords
+        .filter(r => new Date(r.date) >= weekStart)
+        .reduce((sum, r) => sum + r.minutes, 0);
+      document.getElementById('weekTime').textContent = minutesToTimeString(weekMinutes);
+      
+      // 今月の学習時間
+      const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+      const monthMinutes = studyRecords
+        .filter(r => new Date(r.date) >= monthStart)
+        .reduce((sum, r) => sum + r.minutes, 0);
+      document.getElementById('monthTime').textContent = minutesToTimeString(monthMinutes);
+      
+      // 学習日数
+      const uniqueDates = [...new Set(studyRecords.map(r => r.date))];
+      document.getElementById('studyDays').textContent = uniqueDates.length;
+      
+      // 早番・遅番・休日の平均
+      const shiftStats = { early: { total: 0, count: 0 }, late: { total: 0, count: 0 }, rest: { total: 0, count: 0 } };
+      
+      studyRecords.forEach(record => {
+        const date = new Date(record.date + 'T00:00:00');
+        const shiftType = getShiftType(date);
+        shiftStats[shiftType].total += record.minutes;
+      });
+      
+      uniqueDates.forEach(dateStr => {
+        const date = new Date(dateStr + 'T00:00:00');
+        const shiftType = getShiftType(date);
+        const dayMinutes = studyRecords
+          .filter(r => r.date === dateStr)
+          .reduce((sum, r) => sum + r.minutes, 0);
+        if (dayMinutes > 0) {
+          shiftStats[shiftType].count++;
+        }
+      });
+      
+      const earlyAvg = shiftStats.early.count > 0 ? shiftStats.early.total / shiftStats.early.count : 0;
+      const lateAvg = shiftStats.late.count > 0 ? shiftStats.late.total / shiftStats.late.count : 0;
+      const restAvg = shiftStats.rest.count > 0 ? shiftStats.rest.total / shiftStats.rest.count : 0;
+      
+      document.getElementById('earlyAvg').textContent = minutesToTimeString(earlyAvg);
+      document.getElementById('lateAvg').textContent = minutesToTimeString(lateAvg);
+      document.getElementById('restAvg').textContent = minutesToTimeString(restAvg);
+      
+      // 試験まで
+      const examDate = new Date('2026-08-23');
+      const daysToExam = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
+      document.getElementById('daysToExam').textContent = daysToExam;
+      
+      // 残り期間の早番・遅番・休日の日数を計算
+      const remainingDays = { early: 0, late: 0, rest: 0 };
+      let currentDate = new Date(today);
+      currentDate.setDate(currentDate.getDate() + 1);
+      
+      while (currentDate <= examDate) {
+        const shiftType = getShiftType(currentDate);
+        remainingDays[shiftType]++;
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+      
+      // 目標達成カード更新
+      updateGoalCards(totalMinutes, remainingDays, earlyAvg, lateAvg, restAvg);
+      
+      // 科目別内訳
+      updateSubjectBreakdown(totalMinutes);
+      
+      // トレンドチャート
+      updateTrendChart();
+      
+      // 曜日別・科目別チャート
+      updateWeekdayChart();
+      
+      // インサイト
+      generateInsights(totalMinutes, earlyAvg, lateAvg, restAvg, remainingDays, shiftStats);
+    }
+    
+    function updateGoalCards(totalMinutes, remainingDays, earlyAvg, lateAvg, restAvg) {
+      const goals = [800, 1000, 1200];
+      
+      goals.forEach(goal => {
+        const goalMinutes = goal * 60;
+        const progress = Math.min(100, (totalMinutes / goalMinutes * 100)).toFixed(1);
+        const remainingMinutes = Math.max(0, goalMinutes - totalMinutes);
+        
+        const progressEl = document.getElementById(`goal${goal}Progress`);
+        if (progressEl) progressEl.textContent = progress + '%';
+        
+        // 早番・遅番・休日別の必要ペース（休日2倍）
+        const totalWeightedDays = (remainingDays.early || 0) + (remainingDays.late || 0) + (remainingDays.rest || 0) * 2;
+        const baseRequired = totalWeightedDays > 0 ? remainingMinutes / totalWeightedDays : 0;
+        
+        const earlyRequired = baseRequired;
+        const lateRequired = baseRequired;
+        const restRequired = baseRequired * 2;
+        
+        const earlyPaceEl = document.getElementById(`goal${goal}EarlyPace`);
+        const latePaceEl = document.getElementById(`goal${goal}LatePace`);
+        const restPaceEl = document.getElementById(`goal${goal}RestPace`);
+        
+        if (earlyPaceEl) earlyPaceEl.textContent = minutesToTimeString(earlyRequired);
+        if (latePaceEl) latePaceEl.textContent = minutesToTimeString(lateRequired);
+        if (restPaceEl) restPaceEl.textContent = minutesToTimeString(restRequired);
+        
+        // ステータス判定
+        const statusEl = document.getElementById(`goal${goal}Status`);
+        if (!statusEl) return;
+        
+        let statusHTML = '';
+        
+        if (totalMinutes >= goalMinutes) {
+          const excess = totalMinutes - goalMinutes;
+          statusHTML = `<span class="status-badge status-ahead">✅ 達成済み（${minutesToTimeString(excess)}超過）</span>`;
+        } else {
+          const shortage = goalMinutes - totalMinutes;
+          
+          // 経過日数のシフトパターンを計算
+          const today = new Date();
+          const startDate = new Date('2026-02-06');
+          const daysPassed = Math.max(0, Math.floor((today - startDate) / (1000 * 60 * 60 * 24)));
+          
+          let passedDays = { early: 0, late: 0, rest: 0 };
+          let checkDate = new Date(startDate);
+          
+          for (let i = 0; i < daysPassed; i++) {
+            const shiftType = getShiftType(checkDate);
+            passedDays[shiftType]++;
+            checkDate.setDate(checkDate.getDate() + 1);
+          }
+          
+          // この目標を達成するための必要ペース（早番・遅番・休日）
+          const totalWeightedDays = (remainingDays.early || 0) + (remainingDays.late || 0) + (remainingDays.rest || 0) * 2;
+          const baseRequired = totalWeightedDays > 0 ? remainingMinutes / totalWeightedDays : 0;
+          const thisEarlyRequired = baseRequired;
+          const thisLateRequired = baseRequired;
+          const thisRestRequired = baseRequired * 2;
+          
+          // 現在の平均ペースでこれまで勉強すべきだった時間
+          const shouldHaveStudied = thisEarlyRequired * passedDays.early + 
+                                    thisLateRequired * passedDays.late + 
+                                    thisRestRequired * passedDays.rest;
+          
+          // 実際の学習時間との差
+          const progressDifference = totalMinutes - shouldHaveStudied;
+          
+          let progressHTML = '';
+          if (progressDifference > 0) {
+            progressHTML = `
+              <div style="margin-top: 12px; padding: 12px; background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-radius: 10px; border: 2px solid #10b981;">
+                <div style="font-size: 13px; color: #065f46; font-weight: 700; margin-bottom: 4px;">📈 進捗状況</div>
+                <div style="font-size: 16px; color: #065f46; font-weight: 800;">
+                  必要ペースより <span style="font-size: 20px;">${minutesToTimeString(progressDifference)}</span> 進んでいます！
+                </div>
+                <div style="font-size: 12px; color: #047857; margin-top: 6px;">
+                  このペースなら${goal}時間達成可能です
+                </div>
+              </div>
+            `;
+          } else if (progressDifference < 0) {
+            progressHTML = `
+              <div style="margin-top: 12px; padding: 12px; background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); border-radius: 10px; border: 2px solid #ef4444;">
+                <div style="font-size: 13px; color: #991b1b; font-weight: 700; margin-bottom: 4px;">⚠️ 進捗状況</div>
+                <div style="font-size: 16px; color: #991b1b; font-weight: 800;">
+                  必要ペースより <span style="font-size: 20px;">${minutesToTimeString(Math.abs(progressDifference))}</span> 遅れています
+                </div>
+                <div style="font-size: 12px; color: #7f1d1d; margin-top: 6px;">
+                  ペースアップが必要です
+                </div>
+              </div>
+            `;
+          } else {
+            progressHTML = `
+              <div style="margin-top: 12px; padding: 12px; background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-radius: 10px; border: 2px solid #3b82f6;">
+                <div style="font-size: 13px; color: #1e40af; font-weight: 700; margin-bottom: 4px;">✨ 進捗状況</div>
+                <div style="font-size: 16px; color: #1e40af; font-weight: 800;">
+                  必要ペース通りです！
+                </div>
+                <div style="font-size: 12px; color: #1e3a8a; margin-top: 6px;">
+                  この調子で頑張りましょう
+                </div>
+              </div>
+            `;
+          }
+          
+          statusHTML = `
+            <span class="status-badge status-ontrack">📊 進行中</span>
+            <div style="margin-top: 10px; font-size: 13px; color: #6b7280; font-weight: 600;">
+              残り必要時間: ${minutesToTimeString(shortage)} (${(shortage/60).toFixed(0)}時間)
+            </div>
+            ${progressHTML}
+          `;
+        }
+        
+        statusEl.innerHTML = statusHTML;
+      });
+    }
+    
+    function updateSubjectBreakdown(totalMinutes) {
+      const subjectTotals = {};
+      let subjectSumMinutes = 0;
+      
+      subjects.forEach(subject => {
+        const minutes = studyRecords
+          .filter(r => r.subject === subject)
+          .reduce((sum, r) => sum + r.minutes, 0);
+        subjectTotals[subject] = minutes;
+        if (subjectTargets[subject] > 0) {  // 「その他」を除く
+          subjectSumMinutes += minutes;
+        }
+      });
+      
+      const container = document.getElementById('subjectBreakdown');
+      container.innerHTML = '';
+      
+      subjects.forEach(subject => {
+        const minutes = subjectTotals[subject] || 0;
+        const hours = (minutes / 60).toFixed(1);
+        const targetHours = subjectTargets[subject];
+        
+        // パーセンテージは目標時間に対する達成率
+        const targetProgress = targetHours > 0 ? ((minutes / 60) / targetHours * 100).toFixed(1) : 0;
+        
+        const item = document.createElement('div');
+        item.className = 'subject-item';
+        item.innerHTML = `
+          <div class="subject-name">
+            <span>${subject}</span>
+            ${targetHours > 0 ? `<span class="subject-target">目標${targetHours}h</span>` : ''}
+          </div>
+          <div class="subject-stats">
+            <div class="subject-time">${hours}h</div>
+            ${targetHours > 0 ? `<div class="subject-percentage">${targetProgress}%</div>` : '<div class="subject-percentage">-</div>'}
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: ${Math.min(100, targetProgress)}%"></div>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+    
+    function updateTrendChart() {
+      const canvas = document.getElementById('trendChart');
+      const ctx = canvas.getContext('2d');
+      
+      const today = new Date();
+      const labels = [];
+      const data = [];
+      
+      for (let i = 29; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        const dateKey = date.toISOString().split('T')[0];
+        
+        labels.push((date.getMonth() + 1) + '/' + date.getDate());
+        
+        const dayMinutes = studyRecords
+          .filter(r => r.date === dateKey)
+          .reduce((sum, r) => sum + r.minutes, 0);
+        
+        data.push((dayMinutes / 60).toFixed(2));
+      }
+      
+      const recent7 = data.slice(-7).reduce((a, b) => parseFloat(a) + parseFloat(b), 0) / 7;
+      const previous7 = data.slice(-14, -7).reduce((a, b) => parseFloat(a) + parseFloat(b), 0) / 7;
+      const change = previous7 > 0 ? ((recent7 - previous7) / previous7 * 100).toFixed(1) : 0;
+      
+      const trendEl = document.getElementById('trendIndicator');
+      if (change > 5) {
+        trendEl.innerHTML = `<span class="trend-indicator trend-up">↗ ${change}% 増加</span>`;
+      } else if (change < -5) {
+        trendEl.innerHTML = `<span class="trend-indicator trend-down">↘ ${Math.abs(change)}% 減少</span>`;
+      } else {
+        trendEl.innerHTML = `<span class="trend-indicator trend-neutral">→ 横ばい</span>`;
+      }
+      
+      if (trendChartInstance) {
+        trendChartInstance.destroy();
+      }
+      
+      trendChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: '学習時間 (時間)',
+            data: data,
+            borderColor: '#667eea',
+            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+            tension: 0.4,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return value + 'h';
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+    
+    let weekdayChartPeriod = 'all';
+    let currentReportType = 'today';
+    
+    // レポート切り替え
+    function switchReport(type) {
+      currentReportType = type;
+      
+      // ボタンのスタイル更新
+      document.querySelectorAll('#report-tab .filter-btn').forEach(btn => {
+        btn.style.background = '#d1d5db';
+        btn.style.color = '#374151';
+      });
+      
+      const activeBtn = type === 'today' ? 'reportBtnToday' : type === 'week' ? 'reportBtnWeek' : 'reportBtnMonth';
+      const btn = document.getElementById(activeBtn);
+      if (btn) {
+        btn.style.background = 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)';
+        btn.style.color = 'white';
+      }
+      
+      updateReport();
+    }
+    
+    // レポート更新
+    function updateReport() {
+      const container = document.getElementById('reportContent');
+      if (!container) return;
+      
+      const today = new Date();
+      let startDate, endDate, title, period;
+      
+      if (currentReportType === 'today') {
+        startDate = new Date(today);
+        startDate.setHours(0, 0, 0, 0);
+        endDate = new Date(today);
+        endDate.setHours(23, 59, 59, 999);
+        title = '今日の学習レポート';
+        period = today.toISOString().split('T')[0];
+      } else if (currentReportType === 'week') {
+        startDate = new Date(today);
+        startDate.setDate(today.getDate() - today.getDay());
+        startDate.setHours(0, 0, 0, 0);
+        endDate = new Date(today);
+        endDate.setHours(23, 59, 59, 999);
+        title = '今週の学習レポート';
+        period = `${startDate.toISOString().split('T')[0]} 〜 ${endDate.toISOString().split('T')[0]}`;
+      } else {
+        startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+        endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        endDate.setHours(23, 59, 59, 999);
+        title = '今月の学習レポート';
+        period = `${today.getFullYear()}年${today.getMonth() + 1}月`;
+      }
+      
+      // データ集計
+      const filteredRecords = studyRecords.filter(r => {
+        const recordDate = new Date(r.date + 'T00:00:00');
+        return recordDate >= startDate && recordDate <= endDate;
+      });
+      
+      const totalMinutes = filteredRecords.reduce((sum, r) => sum + r.minutes, 0);
+      const uniqueDates = [...new Set(filteredRecords.map(r => r.date))].length;
+      const avgMinutes = uniqueDates > 0 ? totalMinutes / uniqueDates : 0;
+      
+      // 科目別集計
+      const subjectTotals = {};
+      subjects.forEach(subject => {
+        subjectTotals[subject] = filteredRecords
+          .filter(r => r.subject === subject)
+          .reduce((sum, r) => sum + r.minutes, 0);
+      });
+      
+      // 最も勉強した科目
+      const sortedSubjects = Object.entries(subjectTotals)
+        .filter(([_, minutes]) => minutes > 0)
+        .sort((a, b) => b[1] - a[1]);
+      
+      const topSubject = sortedSubjects.length > 0 ? sortedSubjects[0] : null;
+      
+      // 日別データ（週間・月間用）
+      let dailyData = '';
+      if (currentReportType !== 'today') {
+        const dateMap = {};
+        let currentDay = new Date(startDate);
+        
+        while (currentDay <= endDate) {
+          const dateKey = currentDay.toISOString().split('T')[0];
+          const dayMinutes = filteredRecords
+            .filter(r => r.date === dateKey)
+            .reduce((sum, r) => sum + r.minutes, 0);
+          
+          dateMap[dateKey] = dayMinutes;
+          currentDay.setDate(currentDay.getDate() + 1);
+        }
+        
+        const dates = Object.keys(dateMap).sort();
+        const maxMinutes = Math.max(...Object.values(dateMap), 1);
+        
+        dailyData = `
+          <div class="chart-section" style="margin-top: 30px;">
+            <div class="chart-title">
+              <span>📊</span>
+              <span>日別学習時間</span>
+            </div>
+            <div style="display: grid; gap: 8px;">
+              ${dates.map(date => {
+                const minutes = dateMap[date];
+                const percentage = (minutes / maxMinutes * 100).toFixed(0);
+                const dateObj = new Date(date + 'T00:00:00');
+                const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+                const weekday = weekdays[dateObj.getDay()];
+                
+                return `
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="min-width: 100px; font-size: 13px; font-weight: 600; color: #374151;">
+                      ${date.substring(5)} (${weekday})
+                    </div>
+                    <div style="flex: 1; background: #e5e7eb; height: 32px; border-radius: 8px; overflow: hidden; position: relative;">
+                      <div style="width: ${percentage}%; height: 100%; background: linear-gradient(90deg, #6366f1, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: flex-end; padding-right: 12px;">
+                        ${minutes > 0 ? `<span style="font-size: 12px; font-weight: 700; color: white;">${minutesToTimeString(minutes)}</span>` : ''}
+                      </div>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }
+      
+      container.innerHTML = `
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h2 style="font-size: 28px; font-weight: 800; color: #1f2937; margin-bottom: 8px;">${title}</h2>
+          <p style="font-size: 14px; color: #6b7280; font-weight: 600;">${period}</p>
+        </div>
+        
+        <!-- サマリーカード -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 30px;">
+          <div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; padding: 24px; border-radius: 16px; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);">
+            <div style="font-size: 13px; opacity: 0.9; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">総学習時間</div>
+            <div style="font-size: 36px; font-weight: 800; font-family: 'Courier New', monospace;">${minutesToTimeString(totalMinutes)}</div>
+          </div>
+          
+          <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 24px; border-radius: 16px; box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);">
+            <div style="font-size: 13px; opacity: 0.9; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">学習日数</div>
+            <div style="font-size: 36px; font-weight: 800;">${uniqueDates}日</div>
+          </div>
+          
+          <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 24px; border-radius: 16px; box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);">
+            <div style="font-size: 13px; opacity: 0.9; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">1日平均</div>
+            <div style="font-size: 36px; font-weight: 800; font-family: 'Courier New', monospace;">${minutesToTimeString(avgMinutes)}</div>
+          </div>
+          
+          ${topSubject ? `
+          <div style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); color: white; padding: 24px; border-radius: 16px; box-shadow: 0 8px 24px rgba(236, 72, 153, 0.3);">
+            <div style="font-size: 13px; opacity: 0.9; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">最も勉強した科目</div>
+            <div style="font-size: 18px; font-weight: 800; margin-bottom: 4px;">${topSubject[0]}</div>
+            <div style="font-size: 24px; font-weight: 700; font-family: 'Courier New', monospace;">${minutesToTimeString(topSubject[1])}</div>
+          </div>
+          ` : ''}
+        </div>
+        
+        <!-- 科目別内訳 -->
+        <div class="chart-section">
+          <div class="chart-title">
+            <span>📚</span>
+            <span>科目別学習時間</span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px;">
+            ${sortedSubjects.map(([subject, minutes]) => {
+              const percentage = totalMinutes > 0 ? (minutes / totalMinutes * 100).toFixed(1) : 0;
+              const hours = (minutes / 60).toFixed(1);
+              
+              return `
+                <div style="background: white; border-radius: 12px; padding: 16px; border-left: 5px solid #6366f1; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                  <div style="font-weight: 800; color: #1f2937; margin-bottom: 8px; font-size: 14px;">${subject}</div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <div style="font-size: 24px; font-weight: 800; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">${hours}h</div>
+                    <div style="font-size: 14px; color: #6b7280; font-weight: 700;">${percentage}%</div>
+                  </div>
+                  <div class="progress-bar" style="background: #e5e7eb; height: 8px; border-radius: 4px; overflow: hidden;">
+                    <div style="width: ${percentage}%; height: 100%; background: linear-gradient(90deg, #6366f1, #8b5cf6); border-radius: 4px;"></div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+        
+        ${dailyData}
+        
+        ${filteredRecords.length === 0 ? `
+          <div style="text-align: center; padding: 60px 20px; background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%); border-radius: 16px; margin-top: 30px;">
+            <div style="font-size: 48px; margin-bottom: 16px;">📚</div>
+            <div style="font-size: 18px; font-weight: 700; color: #6b7280; margin-bottom: 8px;">この期間の学習記録がありません</div>
+            <div style="font-size: 14px; color: #9ca3af;">タイマーで学習を記録しましょう！</div>
+          </div>
+        ` : ''}
+        
+        <div style="margin-top: 30px; text-align: center;">
+          <button onclick="exportReportAsImage()" style="padding: 14px 28px; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3); transition: all 0.3s;">
+            📸 レポートを画像として保存
+          </button>
+        </div>
+      `;
+    }
+    
+    // レポート画像エクスポート（簡易版）
+    function exportReportAsImage() {
+      alert('📸 レポートのスクリーンショットを撮影してください！\n\nWindows: Win + Shift + S\nmacOS: Cmd + Shift + 4\n\n※ 本格的な画像エクスポート機能は次のバージョンで実装予定です');
+    }
+    
+    function updateWeekdayChartPeriod(period) {
+      weekdayChartPeriod = period;
+      
+      // ボタンのスタイル更新
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.style.background = '#d1d5db';
+        btn.style.color = '#374151';
+      });
+      
+      const activeBtn = period === 'week' ? 'weekdayBtn1Week' : period === 'month' ? 'weekdayBtn1Month' : 'weekdayBtnAll';
+      const btn = document.getElementById(activeBtn);
+      if (btn) {
+        btn.style.background = '#6366f1';
+        btn.style.color = 'white';
+      }
+      
+      updateWeekdayChart();
+    }
+    
+    function updateWeekdayChart() {
+      const canvas = document.getElementById('weekdayChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      
+      const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+      
+      // 期間に応じてフィルター
+      const today = new Date();
+      let filteredRecords = studyRecords;
+      
+      if (weekdayChartPeriod === 'week') {
+        const weekAgo = new Date(today);
+        weekAgo.setDate(today.getDate() - 7);
+        filteredRecords = studyRecords.filter(r => new Date(r.date) >= weekAgo);
+      } else if (weekdayChartPeriod === 'month') {
+        const monthAgo = new Date(today);
+        monthAgo.setMonth(today.getMonth() - 1);
+        filteredRecords = studyRecords.filter(r => new Date(r.date) >= monthAgo);
+      }
+      
+      // 科目別・曜日別のデータを集計
+      const datasets = [];
+      
+      subjects.forEach((subject, idx) => {
+        const weekdayTotals = [0, 0, 0, 0, 0, 0, 0];
+        const weekdayCounts = [0, 0, 0, 0, 0, 0, 0];
+        
+        filteredRecords.filter(r => r.subject === subject).forEach(record => {
+          const date = new Date(record.date);
+          const day = date.getDay();
+          weekdayTotals[day] += record.minutes;
+          if (record.minutes > 0) weekdayCounts[day]++;
+        });
+        
+        const averages = weekdayTotals.map((total, idx) => 
+          weekdayCounts[idx] > 0 ? (total / weekdayCounts[idx] / 60).toFixed(2) : 0
+        );
+        
+        // データがある科目のみ追加
+        const hasData = averages.some(v => v > 0);
+        if (hasData) {
+          datasets.push({
+            label: subject,
+            data: averages,
+            backgroundColor: subjectColors[idx],
+            borderColor: subjectColors[idx],
+            borderWidth: 1
+          });
+        }
+      });
+      
+      if (weekdayChartInstance) {
+        weekdayChartInstance.destroy();
+      }
+      
+      weekdayChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: weekdays,
+          datasets: datasets
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: 'bottom'
+            },
+            title: {
+              display: true,
+              text: weekdayChartPeriod === 'week' ? '直近1週間' : weekdayChartPeriod === 'month' ? '直近1ヶ月' : '全期間'
+            }
+          },
+          scales: {
+            x: {
+              stacked: true
+            },
+            y: {
+              stacked: true,
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return value + 'h';
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+    
+    function generateInsights(totalMinutes, earlyAvg, lateAvg, restAvg, remainingDays, shiftStats) {
+      const container = document.getElementById('insights');
+      container.innerHTML = '';
+      
+      const insights = [];
+      
+      // 目標達成可能性（1000時間基準）
+      const goalMinutes = 1000 * 60;
+      const remainingMinutes = goalMinutes - totalMinutes;
+      const totalWeightedDays = remainingDays.early + remainingDays.late + remainingDays.rest * 2;
+      const baseRequired = totalWeightedDays > 0 ? remainingMinutes / totalWeightedDays : 0;
+      
+      if (remainingMinutes > 0) {
+        const earlyRequired = baseRequired;
+        const lateRequired = baseRequired;
+        const restRequired = baseRequired * 2;
+        
+        const earlyOk = earlyRequired <= earlyAvg * 1.1;
+        const lateOk = lateRequired <= lateAvg * 1.1;
+        const restOk = restRequired <= restAvg * 1.1;
+        
+        if (earlyOk && lateOk && restOk) {
+          insights.push({
+            icon: '🎯',
+            title: '1000時間目標達成は十分可能です！',
+            text: `現在のペースを維持すれば、目標達成が可能です。早番${minutesToTimeString(earlyRequired)}、遅番${minutesToTimeString(lateRequired)}、休日${minutesToTimeString(restRequired)}の学習を継続しましょう。`
+          });
+        } else {
+          const shortages = [];
+          if (!earlyOk) shortages.push(`早番は+${Math.round(earlyRequired - earlyAvg)}分`);
+          if (!lateOk) shortages.push(`遅番は+${Math.round(lateRequired - lateAvg)}分`);
+          if (!restOk) shortages.push(`休日は+${Math.round(restRequired - restAvg)}分`);
+          
+          insights.push({
+            icon: '⚠️',
+            title: 'ペースアップが必要です',
+            text: `目標達成には${shortages.join('、')}の増加が必要です。特に時間を確保しやすい休日を活用しましょう。`
+          });
+        }
+      } else {
+        insights.push({
+          icon: '🎉',
+          title: '1000時間目標達成おめでとうございます！',
+          text: `素晴らしい努力です！このペースを維持して、さらに上の目標や復習に時間を使いましょう。試験本番まで気を抜かずに頑張ってください。`
+        });
+      }
+      
+      // シフトバランスのアドバイス
+      if (shiftStats.rest.count > 0 && shiftStats.early.count > 0) {
+        const restToEarlyRatio = restAvg / earlyAvg;
+        if (restToEarlyRatio < 1.3) {
+          insights.push({
+            icon: '📅',
+            title: '休日の学習時間を増やしましょう',
+            text: `休日は勤務日より時間を確保しやすいはずです。現在、休日の平均${minutesToTimeString(restAvg)}は早番${minutesToTimeString(earlyAvg)}の${restToEarlyRatio.toFixed(1)}倍です。休日は早番の2倍程度（${minutesToTimeString(earlyAvg * 2)}）を目標にすると効率的です。`
+          });
+        } else if (restToEarlyRatio > 3) {
+          insights.push({
+            icon: '⚡',
+            title: '平日の学習習慣を強化しましょう',
+            text: `休日にしっかり勉強できていますね！平日も少しずつ時間を増やすと、さらに安定したペースになります。通勤時間や昼休みなどのスキマ時間も活用してみましょう。`
+          });
+        }
+      }
+      
+      // 科目バランスのアドバイス
+      const subjectTotals = {};
+      subjects.forEach(subject => {
+        if (subjectTargets[subject] > 0) {
+          const minutes = studyRecords
+            .filter(r => r.subject === subject)
+            .reduce((sum, r) => sum + r.minutes, 0);
+          subjectTotals[subject] = {
+            minutes: minutes,
+            progress: (minutes / 60) / subjectTargets[subject]
+          };
+        }
+      });
+      
+      const sortedByProgress = Object.entries(subjectTotals)
+        .sort((a, b) => a[1].progress - b[1].progress);
+      
+      if (sortedByProgress.length > 0) {
+        const weakest = sortedByProgress[0];
+        const strongest = sortedByProgress[sortedByProgress.length - 1];
+        
+        if (weakest[1].progress < 0.3 && strongest[1].progress > 0.6) {
+          const weakProgress = (weakest[1].progress * 100).toFixed(0);
+          const remaining = (subjectTargets[weakest[0]] - weakest[1].minutes / 60).toFixed(0);
+          
+          insights.push({
+            icon: '📖',
+            title: `${weakest[0]}に重点を置きましょう`,
+            text: `${weakest[0]}の進捗が${weakProgress}%と遅れています。目標まで残り約${remaining}時間です。得意科目とのバランスを取りながら、苦手科目を優先的に学習することをおすすめします。`
+          });
+        } else if (Object.values(subjectTotals).every(s => s.progress > 0.2 && s.progress < 0.8)) {
+          insights.push({
+            icon: '👏',
+            title: '科目バランスが素晴らしいです',
+            text: `全科目をバランスよく学習できています。この調子で各科目を着実に進めていきましょう。どの科目も満遍なく力をつけることが合格への近道です。`
+          });
+        }
+      }
+      
+      // 学習習慣のアドバイス
+      const today = new Date();
+      const last7Days = [];
+      for (let i = 0; i < 7; i++) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        last7Days.push(date.toISOString().split('T')[0]);
+      }
+      
+      const studiedDays = last7Days.filter(date => 
+        studyRecords.some(r => r.date === date)
+      ).length;
+      
+      const last30Days = [];
+      for (let i = 0; i < 30; i++) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        last30Days.push(date.toISOString().split('T')[0]);
+      }
+      
+      const studiedDays30 = last30Days.filter(date => 
+        studyRecords.some(r => r.date === date)
+      ).length;
+      
+      if (studiedDays >= 6) {
+        insights.push({
+          icon: '🔥',
+          title: '素晴らしい学習習慣です！',
+          text: `この1週間で${studiedDays}日学習しました。ほぼ毎日勉強する習慣が身についていますね。継続は力なり。この調子で合格まで走り抜けましょう！`
+        });
+      } else if (studiedDays >= 4) {
+        insights.push({
+          icon: '💪',
+          title: '良いペースです！',
+          text: `この1週間で${studiedDays}日学習しました。週5日以上を目標に、さらに習慣化を進めましょう。休日だけでなく、平日も少しずつ学習する習慣をつけると効果的です。`
+        });
+      } else if (studiedDays > 0) {
+        insights.push({
+          icon: '📚',
+          title: '学習習慣を強化しましょう',
+          text: `この1週間の学習日数は${studiedDays}日です。理想は週5日以上です。毎日少しずつでも良いので、コンスタントに学習する習慣をつけましょう。15分でも続けることが大切です。`
+        });
+      }
+      
+      // 継続性のアドバイス
+      if (studiedDays30 > 0) {
+        const continuityRate = (studiedDays30 / 30 * 100).toFixed(0);
+        if (continuityRate > 80) {
+          insights.push({
+            icon: '🌟',
+            title: '驚異的な継続力です！',
+            text: `この30日間で${studiedDays30}日学習（継続率${continuityRate}%）。この継続力があれば合格は間違いありません。体調管理にも気をつけて、最後まで走り抜けましょう！`
+          });
+        }
+      }
+      
+      // 試験までの残り時間に応じたアドバイス
+      const examDate = new Date('2026-08-23');
+      const daysToExam = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
+      
+      if (daysToExam <= 30) {
+        insights.push({
+          icon: '⏰',
+          title: '試験直前期に入りました',
+          text: `試験まで残り${daysToExam}日です。新しい論点よりも、これまで学習した内容の復習と定着に重点を置きましょう。過去問を繰り返し解いて、本番の感覚を養うことが重要です。`
+        });
+      } else if (daysToExam <= 60) {
+        insights.push({
+          icon: '📝',
+          title: '仕上げの時期です',
+          text: `試験まで残り${daysToExam}日です。基礎知識の定着を確認しながら、過去問演習を増やしていきましょう。苦手分野の克服と得意分野の確実な得点が鍵です。`
+        });
+      }
+      
+      insights.forEach(insight => {
+        const item = document.createElement('div');
+        item.className = 'insight-item';
+        item.innerHTML = `
+          <div class="insight-icon">${insight.icon}</div>
+          <div class="insight-content">
+            <h3>${insight.title}</h3>
+            <p>${insight.text}</p>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+    
+    // エクスポート
+    function exportSheet() {
+      let csv = '日付,曜日,残り日数,' + subjects.join(',') + ',当日合計\n';
+      
+      const startDate = new Date('2026-02-04');
+      const examDate = new Date('2026-08-23');
+      const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+      
+      let currentDate = new Date(startDate);
+      while (currentDate <= examDate) {
+        const dateKey = currentDate.toISOString().split('T')[0];
+        const weekday = weekdays[currentDate.getDay()];
+        const remaining = Math.floor((examDate - currentDate) / (1000 * 60 * 60 * 24));
+        
+        let row = `${dateKey},${weekday},${remaining}`;
+        let dailyTotal = 0;
+        
+        subjects.forEach(subject => {
+          const minutes = sheetData[dateKey]?.[subject] || 0;
+          row += `,${minutesToTimeString(minutes)}`;
+          dailyTotal += minutes;
+        });
+        
+        row += `,${minutesToTimeString(dailyTotal)}\n`;
+        csv += row;
+        
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+      
+      downloadCSV(csv, '社労士試験_学習記録_横型.csv');
+    }
+    
+    function exportOriginalFormat() {
+      let csv = '日付,曜日,残り日数,科目,勉強時間\n';
+      
+      const startDate = new Date('2026-02-04');
+      const examDate = new Date('2026-08-23');
+      const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+      
+      let currentDate = new Date(startDate);
+      while (currentDate <= examDate) {
+        const dateKey = currentDate.toISOString().split('T')[0];
+        const weekday = weekdays[currentDate.getDay()];
+        const remaining = Math.floor((examDate - currentDate) / (1000 * 60 * 60 * 24));
+        
+        const dayData = sheetData[dateKey] || {};
+        const hasData = Object.values(dayData).some(v => v > 0);
+        
+        if (hasData) {
+          subjects.forEach(subject => {
+            const minutes = dayData[subject] || 0;
+            if (minutes > 0) {
+              csv += `${dateKey},${weekday},${remaining},${subject},${minutesToTimeString(minutes)}\n`;
+            }
+          });
+        } else {
+          csv += `${dateKey},${weekday},${remaining},,\n`;
+        }
+        
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+      
+      downloadCSV(csv, '社労士試験_学習記録_縦型.csv');
+    }
+    
+    function downloadCSV(csv, filename) {
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      
+      link.setAttribute('href', url);
+      link.setAttribute('download', filename);
+      link.style.visibility = 'hidden';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+    
+    // ユーティリティ
+    function timeStringToMinutes(str) {
+      const parts = str.split(':');
+      if (parts.length !== 2) return 0;
+      const hours = parseInt(parts[0]) || 0;
+      const minutes = parseInt(parts[1]) || 0;
+      return hours * 60 + minutes;
+    }
+    
+    function minutesToTimeString(minutes) {
+      const hours = Math.floor(minutes / 60);
+      const mins = Math.floor(minutes % 60);
+      return `${pad(hours)}:${pad(mins)}`;
+    }
+    
+    function showMessage(msg, type) {
+      const msgEl = document.getElementById('message');
+      msgEl.textContent = msg;
+      msgEl.className = 'message ' + type;
+    }
+    
+    function hideMessage() {
+      document.getElementById('message').className = 'message';
+    }
+  </script>
+</body>
+</html>
