@@ -3,879 +3,296 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>社労士試験 学習管理システム Pro</title>
+  <title>社労士試験 学習RPG Pro</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', Arial, sans-serif;
-    }
-    
-    body {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      padding: 20px;
-    }
-    
-    .main-container {
-      max-width: 1600px;
-      margin: 0 auto;
-    }
-    
-    .tabs {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      background: rgba(255, 255, 255, 0.2);
-      padding: 10px;
-      border-radius: 15px;
-      backdrop-filter: blur(10px);
-    }
-    
-    .tab-btn {
-      flex: 1;
-      padding: 15px;
-      background: rgba(255, 255, 255, 0.3);
-      border: none;
-      border-radius: 10px;
-      color: white;
-      font-size: 18px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-    
-    .tab-btn.active {
-      background: white;
-      color: #667eea;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      transform: translateY(-2px);
-    }
-    
-    .tab-btn:hover:not(.active) {
-      background: rgba(255, 255, 255, 0.4);
-    }
-    
-    .tab-content {
-      display: none;
-      animation: fadeIn 0.3s;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    .tab-content.active {
-      display: block;
-    }
-    
-    /* タイマーセクション */
-    .timer-container {
-      max-width: 500px;
-      margin: 0 auto;
-      background: white;
-      border-radius: 20px;
-      padding: 30px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    }
-    
-    h1 {
-      text-align: center;
-      color: #667eea;
-      margin-bottom: 10px;
-      font-size: 28px;
-    }
-    
-    .date-display {
-      text-align: center;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 12px;
-      border-radius: 10px;
-      margin-bottom: 25px;
-      font-size: 16px;
-      font-weight: bold;
-    }
-    
-    .subject-select {
-      margin-bottom: 25px;
-    }
-    
-    label {
-      display: block;
-      margin-bottom: 10px;
-      font-weight: bold;
-      color: #555;
-      font-size: 16px;
-    }
-    
-    select, input[type="date"], input[type="text"] {
-      width: 100%;
-      padding: 14px;
-      font-size: 17px;
-      border: 2px solid #ddd;
-      border-radius: 10px;
-      background: white;
-      cursor: pointer;
-      transition: border-color 0.3s;
-    }
-    
-    input[type="text"] {
-      text-align: center;
-      font-family: 'Courier New', monospace;
-    }
-    
-    select:focus, input:focus {
-      outline: none;
-      border-color: #667eea;
-    }
-    
-    .timer-display {
-      text-align: center;
-      font-size: 72px;
-      font-weight: bold;
-      color: #667eea;
-      margin: 40px 0;
-      font-family: 'Courier New', monospace;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-    }
-    
-    .controls {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 25px;
-    }
-    
-    button {
-      padding: 16px;
-      font-size: 17px;
-      font-weight: bold;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.3s;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-    
-    .controls button {
-      flex: 1;
-    }
-    
-    .start-btn {
-      background: #10b981;
-      color: white;
-    }
-    
-    .start-btn:hover:not(:disabled) {
-      background: #059669;
-      transform: translateY(-2px);
-    }
-    
-    .start-btn:disabled {
-      background: #d1d5db;
-      cursor: not-allowed;
-      transform: none;
-    }
-    
-    .stop-btn {
-      background: #ef4444;
-      color: white;
-    }
-    
-    .stop-btn:hover:not(:disabled) {
-      background: #dc2626;
-      transform: translateY(-2px);
-    }
-    
-    .stop-btn:disabled {
-      background: #d1d5db;
-      cursor: not-allowed;
-      transform: none;
-    }
-    
-    .reset-btn {
-      background: #6b7280;
-      color: white;
-    }
-    
-    .reset-btn:hover {
-      background: #4b5563;
-      transform: translateY(-2px);
-    }
-    
-    .elapsed-info {
-      text-align: center;
-      color: #666;
-      margin-bottom: 20px;
-      font-size: 16px;
-      min-height: 24px;
-    }
-    
-    .record-btn {
-      width: 100%;
-      padding: 18px;
-      background: #667eea;
-      color: white;
-      font-size: 19px;
-      font-weight: bold;
-    }
-    
-    .record-btn:hover:not(:disabled) {
-      background: #5568d3;
-      transform: translateY(-2px);
-    }
-    
-    .record-btn:disabled {
-      background: #d1d5db;
-      cursor: not-allowed;
-      transform: none;
-    }
-    
-    .message {
-      text-align: center;
-      margin-top: 15px;
-      padding: 12px;
-      border-radius: 10px;
-      font-weight: bold;
-      display: none;
-    }
-    
-    .message.success {
-      background: #d1fae5;
-      color: #065f46;
-      display: block;
-    }
-    
-    .message.error {
-      background: #fee2e2;
-      color: #991b1b;
-      display: block;
-    }
-    
-    .helper-text {
-      font-size: 13px;
-      color: #666;
-      margin-top: 5px;
-      text-align: center;
-    }
-    
-    /* スプレッドシートセクション */
-    .sheet-container {
-      background: white;
-      border-radius: 20px;
-      padding: 30px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    }
-    
-    .sheet-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 25px;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-    
-    .total-display {
-      background: linear-gradient(135deg, #203864 0%, #1e3a5f 100%);
-      color: white;
-      padding: 20px;
-      border-radius: 12px;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    
-    .total-label {
-      font-size: 16px;
-      opacity: 0.9;
-      margin-bottom: 8px;
-    }
-    
-    .total-time {
-      font-size: 48px;
-      font-weight: bold;
-      font-family: 'Courier New', monospace;
-    }
-    
-    .sheet-wrapper {
-      overflow-x: auto;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      max-height: 70vh;
-      overflow-y: auto;
-    }
-    
-    .sheet-table {
-      width: 100%;
-      border-collapse: collapse;
-      background: white;
-      font-size: 14px;
-    }
-    
-    .sheet-table thead {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    
-    .sheet-table th {
-      background: #4472C4;
-      color: white;
-      padding: 12px 8px;
-      text-align: center;
-      font-weight: bold;
-      font-size: 12px;
-      border: 1px solid #365a9e;
-      min-width: 80px;
-    }
-    
-    .sheet-table th.subject-col {
-      min-width: 90px;
-      background: #70AD47;
-      border: 1px solid #5a8c38;
-    }
-    
-    .sheet-table th.total-col {
-      min-width: 80px;
-      background: #FFC000;
-      border: 1px solid #d9a200;
-    }
-    
-    .sheet-table td {
-      padding: 8px;
-      text-align: center;
-      border: 1px solid #e0e0e0;
-    }
-    
-    .sheet-table .date-cell {
-      font-weight: bold;
-    }
-    
-    .sheet-table .weekday-sat {
-      color: #0000FF;
-    }
-    
-    .sheet-table .weekday-sun {
-      color: #FF0000;
-    }
-    
-    .sheet-table .shift-early {
-      background: #87CEEB;
-    }
-    
-    .sheet-table .shift-rest {
-      background: #F4B084;
-    }
-    
-    .sheet-table .shift-late {
-      background: #FFB6C1;
-    }
-    
-    .sheet-table input {
-      width: 100%;
-      border: none;
-      background: transparent;
-      text-align: center;
-      font-family: 'Courier New', monospace;
-      padding: 4px;
-      font-size: 14px;
-    }
-    
-    .sheet-table input:focus {
-      outline: 2px solid #667eea;
-      background: #fff;
-      border-radius: 4px;
-    }
-    
-    /* 勉強時間がある場合、濃い背景色 */
-    .sheet-table input.has-value {
-      background: #2d5a9e !important;
-      color: white;
-      font-weight: bold;
-    }
-    
-    .sheet-table .shift-early input.has-value {
-      background: #1e90ff !important;
-    }
-    
-    .sheet-table .shift-rest input.has-value {
-      background: #d2691e !important;
-    }
-    
-    .sheet-table .shift-late input.has-value {
-      background: #c71585 !important;
-    }
-    
-    .sheet-table .total-cell {
-      background: #FFF2CC;
-      font-weight: bold;
-      font-family: 'Courier New', monospace;
-    }
-    
-    .sheet-table .summary-row {
-      background: #E7E6E6;
-      font-weight: bold;
-    }
-    
-    /* 記録ログセクション */
-    .log-container {
-      background: white;
-      border-radius: 20px;
-      padding: 30px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    }
-    
-    .log-table-wrapper {
-      overflow-x: auto;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      max-height: 70vh;
-      overflow-y: auto;
-    }
-    
-    .log-table {
-      width: 100%;
-      border-collapse: collapse;
-      background: white;
-    }
-    
-    .log-table thead {
-      background: #667eea;
-      color: white;
-      position: sticky;
-      top: 0;
-      z-index: 5;
-    }
-    
-    .log-table th {
-      padding: 15px;
-      text-align: left;
-      font-weight: bold;
-      font-size: 15px;
-    }
-    
-    .log-table td {
-      padding: 12px 15px;
-      border-bottom: 1px solid #e5e7eb;
-    }
-    
-    .log-table tbody tr:hover {
-      background: #f9fafb;
-    }
-    
-    .log-actions {
-      display: flex;
-      gap: 8px;
-    }
-    
-    .edit-btn, .delete-btn {
-      padding: 6px 12px;
-      font-size: 13px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    
-    .edit-btn {
-      background: #3b82f6;
-      color: white;
-    }
-    
-    .edit-btn:hover {
-      background: #2563eb;
-    }
-    
-    .delete-btn {
-      background: #ef4444;
-      color: white;
-    }
-    
-    .delete-btn:hover {
-      background: #dc2626;
-    }
-    
-    /* モーダル */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-    }
-    
-    .modal.active {
-      display: flex;
-    }
-    
-    .modal-content {
-      background: white;
-      border-radius: 20px;
-      padding: 30px;
-      max-width: 500px;
-      width: 90%;
-    }
-    
-    .modal-title {
-      font-size: 24px;
-      font-weight: bold;
-      color: #667eea;
-      margin-bottom: 20px;
-    }
-    
-    .modal-buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-    
-    .modal-buttons button {
-      flex: 1;
-    }
-    
-    /* 統計分析セクション */
-    .stats-container {
-      background: white;
-      border-radius: 20px;
-      padding: 30px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    }
-    
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-      margin-bottom: 30px;
-    }
-    
-    .stat-card {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 20px;
-      border-radius: 12px;
-      text-align: center;
-      transition: transform 0.3s;
-    }
-    
-    .stat-card:hover {
-      transform: translateY(-5px);
-    }
-    
-    .stat-label {
-      font-size: 14px;
-      opacity: 0.9;
-      margin-bottom: 8px;
-    }
-    
-    .stat-value {
-      font-size: 32px;
-      font-weight: bold;
-      font-family: 'Courier New', monospace;
-    }
-    
-    .goal-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 15px;
-      margin-bottom: 30px;
-    }
-    
-    .goal-card {
-      background: white;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      border-left: 5px solid #667eea;
-    }
-    
-    .goal-title {
-      font-size: 18px;
-      font-weight: bold;
-      color: #374151;
-      margin-bottom: 15px;
-    }
-    
-    .goal-stat {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    
-    .goal-label {
-      color: #6b7280;
-      font-size: 14px;
-    }
-    
-    .goal-value {
-      font-size: 20px;
-      font-weight: bold;
-      color: #667eea;
-      font-family: 'Courier New', monospace;
-    }
-    
-    .status-badge {
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: bold;
-      margin-top: 10px;
-    }
-    
-    .status-ahead {
-      background: #d1fae5;
-      color: #065f46;
-    }
-    
-    .status-behind {
-      background: #fee2e2;
-      color: #991b1b;
-    }
-    
-    .status-ontrack {
-      background: #dbeafe;
-      color: #1e40af;
-    }
-    
-    .chart-section {
-      background: #f9fafb;
-      border-radius: 12px;
-      padding: 25px;
-      margin-bottom: 25px;
-    }
-    
-    .chart-title {
-      font-size: 20px;
-      font-weight: bold;
-      color: #374151;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    
-    .chart-canvas {
-      width: 100%;
-      height: 300px;
-      background: white;
-      border-radius: 8px;
-      padding: 15px;
-    }
-    
-    .subject-breakdown {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 15px;
-      margin-top: 20px;
-    }
-    
-    .subject-item {
-      background: white;
-      border-radius: 8px;
-      padding: 15px;
-      border-left: 4px solid #667eea;
-    }
-    
-    .subject-name {
-      font-weight: bold;
-      color: #374151;
-      margin-bottom: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .subject-target {
-      font-size: 12px;
-      color: #6b7280;
-      background: #f3f4f6;
-      padding: 2px 8px;
-      border-radius: 12px;
-    }
-    
-    .subject-stats {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .subject-time {
-      font-size: 24px;
-      font-weight: bold;
-      color: #667eea;
-      font-family: 'Courier New', monospace;
-    }
-    
-    .subject-percentage {
-      font-size: 14px;
-      color: #6b7280;
-    }
-    
-    .progress-bar {
-      width: 100%;
-      height: 8px;
-      background: #e5e7eb;
-      border-radius: 4px;
-      margin-top: 8px;
-      overflow: hidden;
-    }
-    
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #667eea, #764ba2);
-      border-radius: 4px;
-      transition: width 0.5s ease;
-    }
-    
-    .insights-section {
-      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-      border-radius: 12px;
-      padding: 25px;
-      border-left: 5px solid #0ea5e9;
-    }
-    
-    .insight-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 15px;
-      margin-bottom: 15px;
-      padding: 15px;
-      background: white;
-      border-radius: 8px;
-    }
-    
-    .insight-icon {
-      font-size: 24px;
-      flex-shrink: 0;
-    }
-    
-    .insight-content h3 {
-      color: #0c4a6e;
-      font-size: 16px;
-      margin-bottom: 5px;
-    }
-    
-    .insight-content p {
-      color: #475569;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-    
-    .controls-row {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-    
-    .export-btn, .clear-btn, .sync-btn {
-      padding: 12px 20px;
-      font-size: 15px;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-    
-    .export-btn {
-      background: #8b5cf6;
-      color: white;
-    }
-    
-    .export-btn:hover {
-      background: #7c3aed;
-      transform: translateY(-2px);
-    }
-    
-    .sync-btn {
-      background: #10b981;
-      color: white;
-    }
-    
-    .sync-btn:hover {
-      background: #059669;
-      transform: translateY(-2px);
-    }
-    
-    .trend-indicator {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: bold;
-      margin-left: 10px;
-    }
-    
-    .trend-up {
-      background: #d1fae5;
-      color: #065f46;
-    }
-    
-    .trend-down {
-      background: #fee2e2;
-      color: #991b1b;
-    }
-    
-    .trend-neutral {
-      background: #e5e7eb;
-      color: #374151;
-    }
-    
-    @media (max-width: 768px) {
-      .timer-display {
-        font-size: 56px;
-      }
-      
-      .stat-value {
-        font-size: 24px;
-      }
-      
-      .sheet-table {
-        font-size: 12px;
-      }
-      
-      .total-time {
-        font-size: 36px;
-      }
-      
-      .chart-canvas {
-        height: 200px;
-      }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Hiragino Sans','Noto Sans JP',Arial,sans-serif; }
+    body { background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%); min-height:100vh; padding:20px; color:#e0e0e0; }
+    .main-container { max-width:1600px; margin:0 auto; }
+    .tabs { display:flex; gap:6px; margin-bottom:20px; background:rgba(255,255,255,0.05); padding:8px; border-radius:15px; backdrop-filter:blur(10px); flex-wrap:wrap; border:1px solid rgba(255,255,255,0.1); }
+    .tab-btn { flex:1; padding:12px 8px; background:rgba(255,255,255,0.08); border:none; border-radius:10px; color:rgba(255,255,255,0.7); font-size:14px; font-weight:bold; cursor:pointer; transition:all 0.3s; min-width:120px; }
+    .tab-btn.active { background:linear-gradient(135deg,#e94560,#c23152); color:white; box-shadow:0 4px 15px rgba(233,69,96,0.4); transform:translateY(-2px); }
+    .tab-btn:hover:not(.active) { background:rgba(255,255,255,0.15); color:white; }
+    .tab-content { display:none; animation:fadeIn 0.3s; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+    .tab-content.active { display:block; }
+
+    /* RPG Game Styles */
+    .game-container { background:linear-gradient(135deg,rgba(26,26,46,0.95),rgba(22,33,62,0.95)); border-radius:20px; padding:30px; box-shadow:0 20px 60px rgba(0,0,0,0.5); border:1px solid rgba(233,69,96,0.3); }
+    .hero-panel { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:25px; }
+    .hero-card { background:linear-gradient(135deg,rgba(233,69,96,0.15),rgba(194,49,82,0.1)); border:2px solid rgba(233,69,96,0.3); border-radius:16px; padding:25px; position:relative; overflow:hidden; }
+    .hero-card::before { content:''; position:absolute; top:-50%; left:-50%; width:200%; height:200%; background:radial-gradient(circle,rgba(233,69,96,0.05) 0%,transparent 70%); animation:pulse 4s infinite; }
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+    .hero-title { font-size:14px; color:rgba(255,255,255,0.6); margin-bottom:4px; text-transform:uppercase; letter-spacing:1px; }
+    .hero-name { font-size:28px; font-weight:900; background:linear-gradient(135deg,#ff6b6b,#ffd93d); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .hero-level { font-size:48px; font-weight:900; color:#ffd93d; text-shadow:0 0 20px rgba(255,217,61,0.5); font-family:'Courier New',monospace; }
+    .xp-bar-container { background:rgba(0,0,0,0.4); border-radius:10px; height:24px; margin:10px 0; overflow:hidden; position:relative; border:1px solid rgba(255,255,255,0.1); }
+    .xp-bar { height:100%; background:linear-gradient(90deg,#e94560,#ffd93d); border-radius:10px; transition:width 1s ease; position:relative; }
+    .xp-bar::after { content:''; position:absolute; top:0; left:0; right:0; bottom:0; background:linear-gradient(180deg,rgba(255,255,255,0.3) 0%,transparent 50%); border-radius:10px; }
+    .xp-text { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:11px; font-weight:bold; color:white; text-shadow:0 1px 3px rgba(0,0,0,0.5); z-index:1; }
+    .combo-display { text-align:center; padding:15px; background:linear-gradient(135deg,rgba(255,107,107,0.2),rgba(255,217,61,0.1)); border-radius:12px; border:1px solid rgba(255,107,107,0.3); margin-bottom:20px; }
+    .combo-count { font-size:42px; font-weight:900; color:#ff6b6b; text-shadow:0 0 30px rgba(255,107,107,0.6); }
+    .combo-label { font-size:13px; color:rgba(255,255,255,0.7); }
+    .combo-multiplier { font-size:20px; font-weight:bold; color:#ffd93d; }
+    .weapon-display { background:rgba(0,0,0,0.3); border-radius:12px; padding:20px; border:1px solid rgba(255,217,61,0.2); margin-bottom:20px; }
+    .weapon-icon { font-size:48px; text-align:center; margin-bottom:10px; }
+    .weapon-name { text-align:center; font-size:18px; font-weight:bold; color:#ffd93d; }
+    .weapon-stat { text-align:center; font-size:14px; color:rgba(255,255,255,0.6); }
+    .boss-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:15px; margin-bottom:25px; }
+    .boss-card { background:rgba(0,0,0,0.3); border-radius:12px; padding:18px; border:1px solid rgba(255,255,255,0.1); transition:all 0.3s; position:relative; overflow:hidden; }
+    .boss-card:hover { border-color:rgba(233,69,96,0.5); transform:translateY(-3px); box-shadow:0 8px 25px rgba(0,0,0,0.3); }
+    .boss-card.defeated { border-color:rgba(255,217,61,0.5); background:rgba(255,217,61,0.05); }
+    .boss-card.defeated::after { content:'CLEAR!'; position:absolute; top:10px; right:10px; background:linear-gradient(135deg,#ffd93d,#ff6b6b); color:#1a1a2e; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:900; }
+    .boss-name { font-size:16px; font-weight:bold; color:#ff6b6b; margin-bottom:4px; }
+    .boss-subject { font-size:12px; color:rgba(255,255,255,0.5); margin-bottom:10px; }
+    .boss-hp-bar { background:rgba(0,0,0,0.5); border-radius:6px; height:16px; overflow:hidden; position:relative; margin-bottom:8px; }
+    .boss-hp-fill { height:100%; background:linear-gradient(90deg,#e94560,#ff6b6b); border-radius:6px; transition:width 0.8s ease; }
+    .boss-hp-fill.low { background:linear-gradient(90deg,#ffd93d,#ff6b6b); }
+    .boss-hp-text { font-size:11px; color:rgba(255,255,255,0.7); font-family:'Courier New',monospace; }
+    .badge-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; }
+    .badge-item { background:rgba(0,0,0,0.3); border-radius:12px; padding:15px; text-align:center; border:1px solid rgba(255,255,255,0.1); transition:all 0.3s; opacity:0.4; }
+    .badge-item.earned { opacity:1; border-color:rgba(255,217,61,0.5); background:rgba(255,217,61,0.05); }
+    .badge-icon { font-size:32px; margin-bottom:8px; }
+    .badge-name { font-size:12px; font-weight:bold; color:#ffd93d; }
+    .badge-desc { font-size:10px; color:rgba(255,255,255,0.5); margin-top:4px; }
+
+    /* Particle/Effect Overlay */
+    #particleCanvas { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:9999; }
+    .levelup-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:10000; justify-content:center; align-items:center; flex-direction:column; }
+    .levelup-overlay.active { display:flex; animation:fadeIn 0.3s; }
+    .levelup-text { font-size:64px; font-weight:900; background:linear-gradient(135deg,#ffd93d,#ff6b6b,#ffd93d); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:levelUpBounce 0.6s ease; text-align:center; }
+    .levelup-sub { font-size:24px; color:#ffd93d; margin-top:15px; animation:fadeIn 0.5s 0.3s both; }
+    @keyframes levelUpBounce { 0%{transform:scale(0);opacity:0} 50%{transform:scale(1.3)} 100%{transform:scale(1);opacity:1} }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+    .screen-shake { animation:shake 0.3s ease; }
+
+    /* Timer Section */
+    .timer-container { max-width:500px; margin:0 auto; background:linear-gradient(135deg,rgba(26,26,46,0.95),rgba(22,33,62,0.95)); border-radius:20px; padding:30px; box-shadow:0 20px 60px rgba(0,0,0,0.5); border:1px solid rgba(233,69,96,0.2); }
+    h1 { text-align:center; color:#e94560; margin-bottom:10px; font-size:28px; }
+    .date-display { text-align:center; background:linear-gradient(135deg,#e94560,#c23152); color:white; padding:12px; border-radius:10px; margin-bottom:25px; font-size:16px; font-weight:bold; }
+    .subject-select { margin-bottom:25px; }
+    label { display:block; margin-bottom:10px; font-weight:bold; color:rgba(255,255,255,0.7); font-size:16px; }
+    select,input[type="date"],input[type="text"] { width:100%; padding:14px; font-size:17px; border:2px solid rgba(255,255,255,0.1); border-radius:10px; background:rgba(0,0,0,0.3); color:white; cursor:pointer; transition:border-color 0.3s; }
+    input[type="text"] { text-align:center; font-family:'Courier New',monospace; }
+    select:focus,input:focus { outline:none; border-color:#e94560; }
+    select option { background:#1a1a2e; color:white; }
+    .timer-display { text-align:center; font-size:72px; font-weight:bold; color:#e94560; margin:40px 0; font-family:'Courier New',monospace; text-shadow:0 0 30px rgba(233,69,96,0.4); }
+    .controls { display:flex; gap:12px; margin-bottom:25px; }
+    button { padding:16px; font-size:17px; font-weight:bold; border:none; border-radius:12px; cursor:pointer; transition:all 0.3s; box-shadow:0 4px 12px rgba(0,0,0,0.3); }
+    .controls button { flex:1; }
+    .start-btn { background:linear-gradient(135deg,#10b981,#059669); color:white; }
+    .start-btn:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 6px 20px rgba(16,185,129,0.4); }
+    .start-btn:disabled { background:#374151; cursor:not-allowed; transform:none; }
+    .stop-btn { background:linear-gradient(135deg,#ef4444,#dc2626); color:white; }
+    .stop-btn:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 6px 20px rgba(239,68,68,0.4); }
+    .stop-btn:disabled { background:#374151; cursor:not-allowed; transform:none; }
+    .reset-btn { background:linear-gradient(135deg,#6b7280,#4b5563); color:white; }
+    .reset-btn:hover { transform:translateY(-2px); }
+    .elapsed-info { text-align:center; color:rgba(255,255,255,0.6); margin-bottom:20px; font-size:16px; min-height:24px; }
+    .record-btn { width:100%; padding:18px; background:linear-gradient(135deg,#e94560,#c23152); color:white; font-size:19px; font-weight:bold; }
+    .record-btn:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 6px 20px rgba(233,69,96,0.4); }
+    .record-btn:disabled { background:#374151; cursor:not-allowed; transform:none; }
+    .message { text-align:center; margin-top:15px; padding:12px; border-radius:10px; font-weight:bold; display:none; }
+    .message.success { background:rgba(16,185,129,0.2); color:#6ee7b7; display:block; border:1px solid rgba(16,185,129,0.3); }
+    .message.error { background:rgba(239,68,68,0.2); color:#fca5a5; display:block; border:1px solid rgba(239,68,68,0.3); }
+    .helper-text { font-size:13px; color:rgba(255,255,255,0.5); margin-top:5px; text-align:center; }
+
+    /* Sheet Section */
+    .sheet-container { background:linear-gradient(135deg,rgba(26,26,46,0.95),rgba(22,33,62,0.95)); border-radius:20px; padding:30px; box-shadow:0 20px 60px rgba(0,0,0,0.5); border:1px solid rgba(233,69,96,0.2); }
+    .sheet-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; flex-wrap:wrap; gap:15px; }
+    .total-display { background:linear-gradient(135deg,#e94560,#c23152); color:white; padding:20px; border-radius:12px; text-align:center; margin-bottom:20px; }
+    .total-label { font-size:16px; opacity:0.9; margin-bottom:8px; }
+    .total-time { font-size:48px; font-weight:bold; font-family:'Courier New',monospace; }
+    .sheet-wrapper { overflow-x:auto; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.3); max-height:70vh; overflow-y:auto; }
+    .sheet-table { width:100%; border-collapse:collapse; background:rgba(0,0,0,0.2); font-size:14px; color:white; }
+    .sheet-table thead { position:sticky; top:0; z-index:10; }
+    .sheet-table th { background:#e94560; color:white; padding:12px 8px; text-align:center; font-weight:bold; font-size:12px; border:1px solid rgba(255,255,255,0.1); min-width:80px; }
+    .sheet-table th.subject-col { min-width:90px; background:#10b981; }
+    .sheet-table th.total-col { min-width:80px; background:#ffd93d; color:#1a1a2e; }
+    .sheet-table td { padding:8px; text-align:center; border:1px solid rgba(255,255,255,0.05); }
+    .sheet-table .date-cell { font-weight:bold; }
+    .sheet-table .weekday-sat { color:#60a5fa; }
+    .sheet-table .weekday-sun { color:#f87171; }
+    .sheet-table .shift-early { background:rgba(96,165,250,0.1); }
+    .sheet-table .shift-rest { background:rgba(251,146,60,0.1); }
+    .sheet-table .shift-late { background:rgba(244,114,182,0.1); }
+    .sheet-table input { width:100%; border:none; background:transparent; text-align:center; font-family:'Courier New',monospace; padding:4px; font-size:14px; color:white; }
+    .sheet-table input:focus { outline:2px solid #e94560; background:rgba(0,0,0,0.3); border-radius:4px; }
+    .sheet-table input.has-value { background:rgba(233,69,96,0.3)!important; color:#ffd93d; font-weight:bold; }
+    .sheet-table .shift-early input.has-value { background:rgba(96,165,250,0.4)!important; }
+    .sheet-table .shift-rest input.has-value { background:rgba(251,146,60,0.3)!important; }
+    .sheet-table .shift-late input.has-value { background:rgba(244,114,182,0.3)!important; }
+    .sheet-table .total-cell { background:rgba(255,217,61,0.15); font-weight:bold; font-family:'Courier New',monospace; color:#ffd93d; }
+    .sheet-table .summary-row { background:rgba(255,255,255,0.05); font-weight:bold; }
+
+    /* Log Section */
+    .log-container { background:linear-gradient(135deg,rgba(26,26,46,0.95),rgba(22,33,62,0.95)); border-radius:20px; padding:30px; box-shadow:0 20px 60px rgba(0,0,0,0.5); border:1px solid rgba(233,69,96,0.2); }
+    .log-table-wrapper { overflow-x:auto; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.3); max-height:70vh; overflow-y:auto; }
+    .log-table { width:100%; border-collapse:collapse; background:rgba(0,0,0,0.2); }
+    .log-table thead { background:#e94560; color:white; position:sticky; top:0; z-index:5; }
+    .log-table th { padding:15px; text-align:left; font-weight:bold; font-size:15px; }
+    .log-table td { padding:12px 15px; border-bottom:1px solid rgba(255,255,255,0.05); color:rgba(255,255,255,0.8); }
+    .log-table tbody tr:hover { background:rgba(233,69,96,0.1); }
+    .log-actions { display:flex; gap:8px; }
+    .edit-btn,.delete-btn { padding:6px 12px; font-size:13px; border-radius:6px; cursor:pointer; }
+    .edit-btn { background:#3b82f6; color:white; }
+    .delete-btn { background:#ef4444; color:white; }
+
+    /* Modal */
+    .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:1000; justify-content:center; align-items:center; }
+    .modal.active { display:flex; }
+    .modal-content { background:linear-gradient(135deg,#1a1a2e,#16213e); border-radius:20px; padding:30px; max-width:500px; width:90%; border:1px solid rgba(233,69,96,0.3); }
+    .modal-title { font-size:24px; font-weight:bold; color:#e94560; margin-bottom:20px; }
+    .modal-buttons { display:flex; gap:10px; margin-top:20px; }
+    .modal-buttons button { flex:1; }
+
+    /* Stats Section */
+    .stats-container { background:linear-gradient(135deg,rgba(26,26,46,0.95),rgba(22,33,62,0.95)); border-radius:20px; padding:30px; box-shadow:0 20px 60px rgba(0,0,0,0.5); border:1px solid rgba(233,69,96,0.2); }
+    .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:15px; margin-bottom:30px; }
+    .stat-card { background:linear-gradient(135deg,rgba(233,69,96,0.2),rgba(194,49,82,0.1)); color:white; padding:20px; border-radius:12px; text-align:center; transition:transform 0.3s; border:1px solid rgba(233,69,96,0.2); }
+    .stat-card:hover { transform:translateY(-5px); }
+    .stat-label { font-size:14px; opacity:0.8; margin-bottom:8px; }
+    .stat-value { font-size:32px; font-weight:bold; font-family:'Courier New',monospace; color:#ffd93d; }
+    .goal-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:15px; margin-bottom:30px; }
+    .goal-card { background:rgba(0,0,0,0.3); border-radius:12px; padding:20px; border-left:5px solid #e94560; }
+    .goal-title { font-size:18px; font-weight:bold; color:white; margin-bottom:15px; }
+    .goal-stat { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+    .goal-label { color:rgba(255,255,255,0.6); font-size:14px; }
+    .goal-value { font-size:20px; font-weight:bold; color:#ffd93d; font-family:'Courier New',monospace; }
+    .status-badge { display:inline-block; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:bold; margin-top:10px; }
+    .status-ahead { background:rgba(16,185,129,0.2); color:#6ee7b7; }
+    .status-behind { background:rgba(239,68,68,0.2); color:#fca5a5; }
+    .status-ontrack { background:rgba(96,165,250,0.2); color:#93c5fd; }
+    .chart-section { background:rgba(0,0,0,0.2); border-radius:12px; padding:25px; margin-bottom:25px; }
+    .chart-title { font-size:20px; font-weight:bold; color:white; margin-bottom:20px; display:flex; align-items:center; gap:10px; }
+    .chart-canvas { width:100%; height:300px; background:rgba(0,0,0,0.2); border-radius:8px; padding:15px; }
+    .subject-breakdown { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:15px; margin-top:20px; }
+    .subject-item { background:rgba(0,0,0,0.2); border-radius:8px; padding:15px; border-left:4px solid #e94560; }
+    .subject-name { font-weight:bold; color:white; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; }
+    .subject-target { font-size:12px; color:rgba(255,255,255,0.5); background:rgba(255,255,255,0.1); padding:2px 8px; border-radius:12px; }
+    .subject-stats { display:flex; justify-content:space-between; align-items:center; }
+    .subject-time { font-size:24px; font-weight:bold; color:#ffd93d; font-family:'Courier New',monospace; }
+    .subject-percentage { font-size:14px; color:rgba(255,255,255,0.6); }
+    .progress-bar { width:100%; height:8px; background:rgba(255,255,255,0.1); border-radius:4px; margin-top:8px; overflow:hidden; }
+    .progress-fill { height:100%; background:linear-gradient(90deg,#e94560,#ffd93d); border-radius:4px; transition:width 0.5s ease; }
+    .insights-section { background:linear-gradient(135deg,rgba(233,69,96,0.1),rgba(194,49,82,0.05)); border-radius:12px; padding:25px; border-left:5px solid #e94560; }
+    .insight-item { display:flex; align-items:flex-start; gap:15px; margin-bottom:15px; padding:15px; background:rgba(0,0,0,0.2); border-radius:8px; }
+    .insight-icon { font-size:24px; flex-shrink:0; }
+    .insight-content h3 { color:#ffd93d; font-size:16px; margin-bottom:5px; }
+    .insight-content p { color:rgba(255,255,255,0.7); font-size:14px; line-height:1.5; }
+    .controls-row { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+    .export-btn,.clear-btn,.sync-btn { padding:12px 20px; font-size:15px; font-weight:bold; border:none; border-radius:8px; cursor:pointer; transition:all 0.3s; }
+    .export-btn { background:linear-gradient(135deg,#8b5cf6,#7c3aed); color:white; }
+    .sync-btn { background:linear-gradient(135deg,#10b981,#059669); color:white; }
+    .trend-indicator { display:inline-flex; align-items:center; gap:5px; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:bold; margin-left:10px; }
+    .trend-up { background:rgba(16,185,129,0.2); color:#6ee7b7; }
+    .trend-down { background:rgba(239,68,68,0.2); color:#fca5a5; }
+    .trend-neutral { background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.7); }
+
+    /* AI Advisor */
+    .ai-container { background:linear-gradient(135deg,rgba(26,26,46,0.95),rgba(22,33,62,0.95)); border-radius:20px; padding:30px; box-shadow:0 20px 60px rgba(0,0,0,0.5); border:1px solid rgba(16,185,129,0.3); }
+    .ai-header { text-align:center; margin-bottom:30px; }
+    .ai-subject-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin-bottom:25px; }
+    .ai-subject-btn { padding:14px; background:rgba(0,0,0,0.3); border:2px solid rgba(255,255,255,0.1); border-radius:12px; color:white; font-weight:bold; font-size:13px; cursor:pointer; transition:all 0.3s; text-align:center; }
+    .ai-subject-btn:hover { border-color:rgba(16,185,129,0.5); background:rgba(16,185,129,0.1); }
+    .ai-subject-btn.active { border-color:#10b981; background:rgba(16,185,129,0.2); box-shadow:0 0 15px rgba(16,185,129,0.3); }
+    .ai-advice-panel { background:rgba(0,0,0,0.3); border-radius:16px; padding:25px; border:1px solid rgba(16,185,129,0.2); }
+    .ai-point { background:rgba(16,185,129,0.1); border-radius:10px; padding:15px; margin-bottom:12px; border-left:4px solid #10b981; }
+    .ai-point h4 { color:#6ee7b7; margin-bottom:8px; font-size:15px; }
+    .ai-point p { color:rgba(255,255,255,0.7); font-size:14px; line-height:1.6; }
+    .ai-tips { background:rgba(255,217,61,0.1); border-radius:12px; padding:20px; border:1px solid rgba(255,217,61,0.2); margin-top:20px; }
+    .ai-tips h3 { color:#ffd93d; margin-bottom:12px; }
+    .ai-tips li { color:rgba(255,255,255,0.7); margin-bottom:8px; font-size:14px; line-height:1.5; }
+    .ai-progress-advice { background:rgba(233,69,96,0.1); border-radius:12px; padding:20px; border:1px solid rgba(233,69,96,0.2); margin-top:20px; }
+
+    @media(max-width:768px) {
+      .timer-display { font-size:56px; }
+      .stat-value { font-size:24px; }
+      .sheet-table { font-size:12px; }
+      .total-time { font-size:36px; }
+      .chart-canvas { height:200px; }
+      .hero-panel { grid-template-columns:1fr; }
+      .hero-level { font-size:36px; }
+      .tab-btn { font-size:12px; padding:10px 4px; }
     }
   </style>
 </head>
 <body>
+  <canvas id="particleCanvas"></canvas>
+  <div id="levelUpOverlay" class="levelup-overlay">
+    <div class="levelup-text" id="levelUpText">LEVEL UP!</div>
+    <div class="levelup-sub" id="levelUpSub"></div>
+  </div>
+
   <div class="main-container">
-    <!-- タブ切り替え -->
     <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('timer')">⏱️ タイマー</button>
-      <button class="tab-btn" onclick="switchTab('sheet')">📋 スプレッドシート</button>
-      <button class="tab-btn" onclick="switchTab('log')">📝 記録ログ</button>
-      <button class="tab-btn" onclick="switchTab('report')">📊 レポート</button>
-      <button class="tab-btn" onclick="switchTab('stats')">📈 高度な分析</button>
+      <button class="tab-btn active" onclick="switchTab('game')">&#9876; 冒険</button>
+      <button class="tab-btn" onclick="switchTab('timer')">&#9201; タイマー</button>
+      <button class="tab-btn" onclick="switchTab('sheet')">&#128203; シート</button>
+      <button class="tab-btn" onclick="switchTab('log')">&#128221; ログ</button>
+      <button class="tab-btn" onclick="switchTab('report')">&#128202; レポート</button>
+      <button class="tab-btn" onclick="switchTab('stats')">&#128200; 分析</button>
+      <button class="tab-btn" onclick="switchTab('ai')">&#129504; AI顧問</button>
     </div>
-    
-    <!-- タイマータブ -->
-    <div id="timer-tab" class="tab-content active">
+
+    <!-- Game Tab -->
+    <div id="game-tab" class="tab-content active">
+      <div class="game-container">
+        <h1 style="color:#ffd93d;font-size:32px;margin-bottom:25px;text-shadow:0 0 20px rgba(255,217,61,0.3);">&#9876; 社労士クエスト &#9876;</h1>
+        <div class="hero-panel">
+          <div class="hero-card">
+            <div class="hero-title">TITLE</div>
+            <div class="hero-name" id="heroTitle">見習い書生</div>
+            <div style="margin-top:15px;">
+              <div class="hero-title">LEVEL</div>
+              <div class="hero-level" id="heroLevel">1</div>
+            </div>
+            <div class="xp-bar-container">
+              <div class="xp-bar" id="xpBar" style="width:0%"></div>
+              <div class="xp-text" id="xpText">0 / 100 XP</div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px;">
+              <div style="text-align:center;padding:10px;background:rgba(0,0,0,0.2);border-radius:8px;">
+                <div style="font-size:11px;color:rgba(255,255,255,0.5);">&#128218; 総学習</div>
+                <div style="font-size:18px;font-weight:bold;color:#ffd93d;font-family:'Courier New',monospace;" id="heroTotalTime">00:00</div>
+              </div>
+              <div style="text-align:center;padding:10px;background:rgba(0,0,0,0.2);border-radius:8px;">
+                <div style="font-size:11px;color:rgba(255,255,255,0.5);">&#128165; 撃破ボス</div>
+                <div style="font-size:18px;font-weight:bold;color:#ff6b6b;" id="heroDefeated">0/10</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="combo-display">
+              <div class="combo-label">&#128293; 連続学習コンボ</div>
+              <div class="combo-count" id="comboCount">0日</div>
+              <div class="combo-multiplier" id="comboMultiplier">x1.0 XP</div>
+            </div>
+            <div class="weapon-display">
+              <div style="font-size:12px;color:rgba(255,255,255,0.5);text-align:center;margin-bottom:8px;">EQUIPMENT</div>
+              <div class="weapon-icon" id="weaponIcon">&#9999;</div>
+              <div class="weapon-name" id="weaponName">鉛筆</div>
+              <div class="weapon-stat" id="weaponStat">ATK 1</div>
+            </div>
+          </div>
+        </div>
+
+        <h2 style="color:#ff6b6b;margin-bottom:15px;font-size:20px;">&#128121; ボス討伐マップ</h2>
+        <div class="boss-grid" id="bossGrid"></div>
+
+        <h2 style="color:#ffd93d;margin-bottom:15px;font-size:20px;">&#127942; 実績バッジ</h2>
+        <div class="badge-grid" id="badgeGrid"></div>
+      </div>
+    </div>
+
+    <!-- Timer Tab -->
+    <div id="timer-tab" class="tab-content">
       <div class="timer-container">
-        <h1>⏱️ 学習タイマー</h1>
-        
-        <div class="date-display" id="dateDisplay">📅 読み込み中...</div>
-        
+        <h1>&#9201; 学習タイマー</h1>
+        <div class="date-display" id="dateDisplay">読み込み中...</div>
         <div class="subject-select">
           <label for="recordDate">記録する日付</label>
           <input type="date" id="recordDate">
         </div>
-        
         <div class="subject-select">
           <label for="subject">科目を選択</label>
           <select id="subject">
@@ -893,45 +310,38 @@
             <option value="その他">その他</option>
           </select>
         </div>
-        
         <div class="timer-display" id="timer">00:00:00</div>
-        
         <div class="subject-select">
           <label for="manualTime">または時間を直接入力</label>
           <input type="text" id="manualTime" placeholder="例: 1:30 (1時間30分)">
           <p class="helper-text">形式: 時:分 (例: 2:15 = 2時間15分)</p>
         </div>
-        
         <div class="elapsed-info" id="elapsedInfo"></div>
-        
         <div class="controls">
           <button class="start-btn" id="startBtn" onclick="startTimer()">開始</button>
           <button class="stop-btn" id="stopBtn" onclick="stopTimer()" disabled>停止</button>
           <button class="reset-btn" id="resetBtn" onclick="resetTimer()">リセット</button>
         </div>
-        
-        <button class="record-btn" id="recordBtn" onclick="recordTime()">📝 記録する</button>
+        <button class="record-btn" id="recordBtn" onclick="recordTime()">&#9876; 記録して攻撃！</button>
         <div class="message" id="message"></div>
       </div>
     </div>
-    
-    <!-- スプレッドシートタブ -->
+
+    <!-- Sheet Tab -->
     <div id="sheet-tab" class="tab-content">
       <div class="sheet-container">
         <div class="sheet-header">
-          <h1>📋 学習記録シート</h1>
+          <h1>&#128203; 学習記録シート</h1>
           <div class="controls-row">
-            <button class="sync-btn" onclick="syncFromTimer()">🔄 タイマーから同期</button>
-            <button class="export-btn" onclick="exportSheet()">💾 横型CSV</button>
-            <button class="export-btn" onclick="exportOriginalFormat()">📊 縦型CSV</button>
+            <button class="sync-btn" onclick="syncFromTimer()">&#128260; タイマーから同期</button>
+            <button class="export-btn" onclick="exportSheet()">&#128190; 横型CSV</button>
+            <button class="export-btn" onclick="exportOriginalFormat()">&#128202; 縦型CSV</button>
           </div>
         </div>
-        
         <div class="total-display">
           <div class="total-label">総学習時間</div>
           <div class="total-time" id="sheetTotalTime">00:00</div>
         </div>
-        
         <div class="sheet-wrapper">
           <table class="sheet-table" id="sheetTable">
             <thead>
@@ -954,266 +364,101 @@
               </tr>
               <tr class="summary-row">
                 <td colspan="3">科目別合計</td>
-                <td id="sum-0">00:00</td>
-                <td id="sum-1">00:00</td>
-                <td id="sum-2">00:00</td>
-                <td id="sum-3">00:00</td>
-                <td id="sum-4">00:00</td>
-                <td id="sum-5">00:00</td>
-                <td id="sum-6">00:00</td>
-                <td id="sum-7">00:00</td>
-                <td id="sum-8">00:00</td>
-                <td id="sum-9">00:00</td>
-                <td id="sum-10">00:00</td>
+                <td id="sum-0">00:00</td><td id="sum-1">00:00</td><td id="sum-2">00:00</td>
+                <td id="sum-3">00:00</td><td id="sum-4">00:00</td><td id="sum-5">00:00</td>
+                <td id="sum-6">00:00</td><td id="sum-7">00:00</td><td id="sum-8">00:00</td>
+                <td id="sum-9">00:00</td><td id="sum-10">00:00</td>
                 <td id="sum-total" class="total-cell">00:00</td>
               </tr>
             </thead>
-            <tbody id="sheetBody">
-            </tbody>
+            <tbody id="sheetBody"></tbody>
           </table>
         </div>
       </div>
     </div>
-    
-    <!-- 記録ログタブ -->
+
+    <!-- Log Tab -->
     <div id="log-tab" class="tab-content">
       <div class="log-container">
-        <h1>📝 記録ログ</h1>
-        
+        <h1>&#128221; 記録ログ</h1>
         <div class="log-table-wrapper">
           <table class="log-table">
-            <thead>
-              <tr>
-                <th>日付</th>
-                <th>記録時刻</th>
-                <th>科目</th>
-                <th>学習時間</th>
-                <th>操作</th>
-              </tr>
-            </thead>
-            <tbody id="logTableBody">
-            </tbody>
+            <thead><tr><th>日付</th><th>記録時刻</th><th>科目</th><th>学習時間</th><th>操作</th></tr></thead>
+            <tbody id="logTableBody"></tbody>
           </table>
         </div>
       </div>
     </div>
-    
-    <!-- レポートタブ -->
+
+    <!-- Report Tab -->
     <div id="report-tab" class="tab-content">
       <div class="stats-container card">
-        <h1 class="section-title">📊 学習レポート</h1>
-        
-        <!-- 期間選択 -->
-        <div style="display: flex; gap: 12px; margin-bottom: 30px; justify-content: center; flex-wrap: wrap;">
-          <button class="filter-btn active" id="reportBtnToday" onclick="switchReport('today')" style="padding: 12px 24px; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.3s;">📅 今日</button>
-          <button class="filter-btn" id="reportBtnWeek" onclick="switchReport('week')" style="padding: 12px 24px; background: #d1d5db; color: #374151; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.3s;">📅 今週</button>
-          <button class="filter-btn" id="reportBtnMonth" onclick="switchReport('month')" style="padding: 12px 24px; background: #d1d5db; color: #374151; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.3s;">📅 今月</button>
+        <h1>&#128202; 学習レポート</h1>
+        <div style="display:flex;gap:12px;margin:20px 0 30px;justify-content:center;flex-wrap:wrap;">
+          <button class="filter-btn active" id="reportBtnToday" onclick="switchReport('today')" style="padding:12px 24px;background:linear-gradient(135deg,#e94560,#c23152);color:white;border:none;border-radius:12px;font-weight:700;cursor:pointer;">今日</button>
+          <button class="filter-btn" id="reportBtnWeek" onclick="switchReport('week')" style="padding:12px 24px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);border:none;border-radius:12px;font-weight:700;cursor:pointer;">今週</button>
+          <button class="filter-btn" id="reportBtnMonth" onclick="switchReport('month')" style="padding:12px 24px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);border:none;border-radius:12px;font-weight:700;cursor:pointer;">今月</button>
         </div>
-        
-        <!-- レポート内容 -->
         <div id="reportContent"></div>
       </div>
     </div>
-    
-    <!-- 高度な分析タブ -->
+
+    <!-- Stats Tab -->
     <div id="stats-tab" class="tab-content">
       <div class="stats-container">
-        <h1>📊 高度な学習分析</h1>
-        
-        <!-- 主要統計カード -->
+        <h1>&#128200; 高度な学習分析</h1>
         <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-label">総学習時間</div>
-            <div class="stat-value" id="totalAllTime">00:00</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">今週の学習時間</div>
-            <div class="stat-value" id="weekTime">00:00</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">今月の学習時間</div>
-            <div class="stat-value" id="monthTime">00:00</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">学習日数</div>
-            <div class="stat-value"><span id="studyDays">0</span>日</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">早番平均</div>
-            <div class="stat-value" id="earlyAvg">00:00</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">遅番平均</div>
-            <div class="stat-value" id="lateAvg">00:00</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">休日平均</div>
-            <div class="stat-value" id="restAvg">00:00</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">試験まで</div>
-            <div class="stat-value"><span id="daysToExam">0</span>日</div>
-          </div>
+          <div class="stat-card"><div class="stat-label">総学習時間</div><div class="stat-value" id="totalAllTime">00:00</div></div>
+          <div class="stat-card"><div class="stat-label">今週の学習時間</div><div class="stat-value" id="weekTime">00:00</div></div>
+          <div class="stat-card"><div class="stat-label">今月の学習時間</div><div class="stat-value" id="monthTime">00:00</div></div>
+          <div class="stat-card"><div class="stat-label">学習日数</div><div class="stat-value"><span id="studyDays">0</span>日</div></div>
+          <div class="stat-card"><div class="stat-label">早番平均</div><div class="stat-value" id="earlyAvg">00:00</div></div>
+          <div class="stat-card"><div class="stat-label">遅番平均</div><div class="stat-value" id="lateAvg">00:00</div></div>
+          <div class="stat-card"><div class="stat-label">休日平均</div><div class="stat-value" id="restAvg">00:00</div></div>
+          <div class="stat-card"><div class="stat-label">試験まで</div><div class="stat-value"><span id="daysToExam">0</span>日</div></div>
         </div>
-        
-        <!-- 目標達成カード -->
         <div class="goal-cards">
-          <div class="goal-card">
-            <div class="goal-title">🎯 800時間目標</div>
-            <div class="goal-stat">
-              <span class="goal-label">達成率</span>
-              <span class="goal-value" id="goal800Progress">0%</span>
-            </div>
-            <div style="margin: 15px 0; padding: 15px; background: #f9fafb; border-radius: 8px;">
-              <div style="font-size: 13px; font-weight: bold; color: #374151; margin-bottom: 10px;">必要ペース</div>
-              <div style="display: grid; gap: 8px;">
-                <div style="display: flex; justify-content: space-between; font-size: 13px;">
-                  <span style="color: #6b7280;">早番:</span>
-                  <span id="goal800EarlyPace" style="font-family: 'Courier New', monospace; font-weight: bold; color: #667eea;">00:00</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-size: 13px;">
-                  <span style="color: #6b7280;">遅番:</span>
-                  <span id="goal800LatePace" style="font-family: 'Courier New', monospace; font-weight: bold; color: #667eea;">00:00</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-size: 13px;">
-                  <span style="color: #6b7280;">休日:</span>
-                  <span id="goal800RestPace" style="font-family: 'Courier New', monospace; font-weight: bold; color: #667eea;">00:00</span>
-                </div>
-              </div>
-            </div>
-            <div id="goal800Status"></div>
-          </div>
-          
-          <div class="goal-card">
-            <div class="goal-title">🎯 1000時間目標</div>
-            <div class="goal-stat">
-              <span class="goal-label">達成率</span>
-              <span class="goal-value" id="goal1000Progress">0%</span>
-            </div>
-            <div style="margin: 15px 0; padding: 15px; background: #f9fafb; border-radius: 8px;">
-              <div style="font-size: 13px; font-weight: bold; color: #374151; margin-bottom: 10px;">必要ペース</div>
-              <div style="display: grid; gap: 8px;">
-                <div style="display: flex; justify-content: space-between; font-size: 13px;">
-                  <span style="color: #6b7280;">早番:</span>
-                  <span id="goal1000EarlyPace" style="font-family: 'Courier New', monospace; font-weight: bold; color: #667eea;">00:00</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-size: 13px;">
-                  <span style="color: #6b7280;">遅番:</span>
-                  <span id="goal1000LatePace" style="font-family: 'Courier New', monospace; font-weight: bold; color: #667eea;">00:00</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-size: 13px;">
-                  <span style="color: #6b7280;">休日:</span>
-                  <span id="goal1000RestPace" style="font-family: 'Courier New', monospace; font-weight: bold; color: #667eea;">00:00</span>
-                </div>
-              </div>
-            </div>
-            <div id="goal1000Status"></div>
-          </div>
-          
-          <div class="goal-card">
-            <div class="goal-title">🎯 1200時間目標</div>
-            <div class="goal-stat">
-              <span class="goal-label">達成率</span>
-              <span class="goal-value" id="goal1200Progress">0%</span>
-            </div>
-            <div style="margin: 15px 0; padding: 15px; background: #f9fafb; border-radius: 8px;">
-              <div style="font-size: 13px; font-weight: bold; color: #374151; margin-bottom: 10px;">必要ペース</div>
-              <div style="display: grid; gap: 8px;">
-                <div style="display: flex; justify-content: space-between; font-size: 13px;">
-                  <span style="color: #6b7280;">早番:</span>
-                  <span id="goal1200EarlyPace" style="font-family: 'Courier New', monospace; font-weight: bold; color: #667eea;">00:00</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-size: 13px;">
-                  <span style="color: #6b7280;">遅番:</span>
-                  <span id="goal1200LatePace" style="font-family: 'Courier New', monospace; font-weight: bold; color: #667eea;">00:00</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-size: 13px;">
-                  <span style="color: #6b7280;">休日:</span>
-                  <span id="goal1200RestPace" style="font-family: 'Courier New', monospace; font-weight: bold; color: #667eea;">00:00</span>
-                </div>
-              </div>
-            </div>
-            <div id="goal1200Status"></div>
-          </div>
+          <div class="goal-card"><div class="goal-title">&#127919; 800時間目標</div><div class="goal-stat"><span class="goal-label">達成率</span><span class="goal-value" id="goal800Progress">0%</span></div><div style="margin:15px 0;padding:15px;background:rgba(0,0,0,0.2);border-radius:8px;"><div style="font-size:13px;font-weight:bold;color:white;margin-bottom:10px;">必要ペース</div><div style="display:grid;gap:8px;"><div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:rgba(255,255,255,0.5);">早番:</span><span id="goal800EarlyPace" style="font-family:'Courier New',monospace;font-weight:bold;color:#ffd93d;">00:00</span></div><div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:rgba(255,255,255,0.5);">遅番:</span><span id="goal800LatePace" style="font-family:'Courier New',monospace;font-weight:bold;color:#ffd93d;">00:00</span></div><div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:rgba(255,255,255,0.5);">休日:</span><span id="goal800RestPace" style="font-family:'Courier New',monospace;font-weight:bold;color:#ffd93d;">00:00</span></div></div></div><div id="goal800Status"></div></div>
+          <div class="goal-card"><div class="goal-title">&#127919; 1000時間目標</div><div class="goal-stat"><span class="goal-label">達成率</span><span class="goal-value" id="goal1000Progress">0%</span></div><div style="margin:15px 0;padding:15px;background:rgba(0,0,0,0.2);border-radius:8px;"><div style="font-size:13px;font-weight:bold;color:white;margin-bottom:10px;">必要ペース</div><div style="display:grid;gap:8px;"><div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:rgba(255,255,255,0.5);">早番:</span><span id="goal1000EarlyPace" style="font-family:'Courier New',monospace;font-weight:bold;color:#ffd93d;">00:00</span></div><div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:rgba(255,255,255,0.5);">遅番:</span><span id="goal1000LatePace" style="font-family:'Courier New',monospace;font-weight:bold;color:#ffd93d;">00:00</span></div><div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:rgba(255,255,255,0.5);">休日:</span><span id="goal1000RestPace" style="font-family:'Courier New',monospace;font-weight:bold;color:#ffd93d;">00:00</span></div></div></div><div id="goal1000Status"></div></div>
+          <div class="goal-card"><div class="goal-title">&#127919; 1200時間目標</div><div class="goal-stat"><span class="goal-label">達成率</span><span class="goal-value" id="goal1200Progress">0%</span></div><div style="margin:15px 0;padding:15px;background:rgba(0,0,0,0.2);border-radius:8px;"><div style="font-size:13px;font-weight:bold;color:white;margin-bottom:10px;">必要ペース</div><div style="display:grid;gap:8px;"><div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:rgba(255,255,255,0.5);">早番:</span><span id="goal1200EarlyPace" style="font-family:'Courier New',monospace;font-weight:bold;color:#ffd93d;">00:00</span></div><div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:rgba(255,255,255,0.5);">遅番:</span><span id="goal1200LatePace" style="font-family:'Courier New',monospace;font-weight:bold;color:#ffd93d;">00:00</span></div><div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:rgba(255,255,255,0.5);">休日:</span><span id="goal1200RestPace" style="font-family:'Courier New',monospace;font-weight:bold;color:#ffd93d;">00:00</span></div></div></div><div id="goal1200Status"></div></div>
         </div>
-        
-        <!-- 科目別内訳 -->
-        <div class="chart-section">
-          <div class="chart-title">
-            <span>📚</span>
-            <span>科目別学習時間</span>
-          </div>
-          <div id="subjectBreakdown" class="subject-breakdown"></div>
+        <div class="chart-section"><div class="chart-title"><span>&#128218;</span><span>科目別学習時間</span></div><div id="subjectBreakdown" class="subject-breakdown"></div></div>
+        <div class="chart-section"><div class="chart-title"><span>&#128200;</span><span>学習トレンド (直近30日)</span><span id="trendIndicator"></span></div><div class="chart-canvas"><canvas id="trendChart"></canvas></div></div>
+        <div class="chart-section"><div class="chart-title"><span>&#128197;</span><span>曜日別・科目別学習パターン</span></div><div style="display:flex;gap:10px;margin-bottom:20px;justify-content:center;"><button class="filter-btn" id="weekdayBtn1Week" onclick="updateWeekdayChartPeriod('week')" style="padding:8px 16px;background:#e94560;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;">直近1週間</button><button class="filter-btn" id="weekdayBtn1Month" onclick="updateWeekdayChartPeriod('month')" style="padding:8px 16px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);border:none;border-radius:8px;font-weight:700;cursor:pointer;">直近1ヶ月</button><button class="filter-btn active" id="weekdayBtnAll" onclick="updateWeekdayChartPeriod('all')" style="padding:8px 16px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);border:none;border-radius:8px;font-weight:700;cursor:pointer;">全期間</button></div><div class="chart-canvas"><canvas id="weekdayChart"></canvas></div></div>
+        <div class="insights-section"><div class="chart-title"><span>&#128161;</span><span>学習インサイト</span></div><div id="insights"></div></div>
+      </div>
+    </div>
+
+    <!-- AI Advisor Tab -->
+    <div id="ai-tab" class="tab-content">
+      <div class="ai-container">
+        <div class="ai-header">
+          <h1 style="color:#10b981;">&#129504; AI学習アドバイザー</h1>
+          <p style="color:rgba(255,255,255,0.6);margin-top:10px;">科目を選んで重要ポイントと学習アドバイスを確認しましょう</p>
         </div>
-        
-        <!-- 学習トレンド -->
-        <div class="chart-section">
-          <div class="chart-title">
-            <span>📈</span>
-            <span>学習トレンド (直近30日)</span>
-            <span id="trendIndicator"></span>
-          </div>
-          <div class="chart-canvas">
-            <canvas id="trendChart"></canvas>
-          </div>
-        </div>
-        
-        <!-- 曜日別・科目別分析 -->
-        <div class="chart-section">
-          <div class="chart-title">
-            <span>📅</span>
-            <span>曜日別・科目別学習パターン</span>
-          </div>
-          <div style="display: flex; gap: 10px; margin-bottom: 20px; justify-content: center;">
-            <button class="filter-btn" id="weekdayBtn1Week" onclick="updateWeekdayChartPeriod('week')" style="padding: 8px 16px; background: #6366f1; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">直近1週間</button>
-            <button class="filter-btn" id="weekdayBtn1Month" onclick="updateWeekdayChartPeriod('month')" style="padding: 8px 16px; background: #d1d5db; color: #374151; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">直近1ヶ月</button>
-            <button class="filter-btn active" id="weekdayBtnAll" onclick="updateWeekdayChartPeriod('all')" style="padding: 8px 16px; background: #d1d5db; color: #374151; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">全期間</button>
-          </div>
-          <div class="chart-canvas">
-            <canvas id="weekdayChart"></canvas>
-          </div>
-        </div>
-        
-        <!-- インサイト -->
-        <div class="insights-section">
-          <div class="chart-title">
-            <span>💡</span>
-            <span>学習インサイト</span>
-          </div>
-          <div id="insights"></div>
-        </div>
+        <div class="ai-subject-grid" id="aiSubjectGrid"></div>
+        <div id="aiAdvicePanel"></div>
+        <div id="aiGeneralAdvice"></div>
       </div>
     </div>
   </div>
-  
-  <!-- 編集モーダル -->
+
+  <!-- Edit Modal -->
   <div id="editModal" class="modal">
     <div class="modal-content">
       <div class="modal-title">記録を編集</div>
-      <div class="subject-select">
-        <label for="editDate">日付</label>
-        <input type="date" id="editDate">
-      </div>
-      <div class="subject-select">
-        <label for="editSubject">科目</label>
+      <div class="subject-select"><label for="editDate">日付</label><input type="date" id="editDate"></div>
+      <div class="subject-select"><label for="editSubject">科目</label>
         <select id="editSubject">
-          <option value="労働基準法">労働基準法</option>
-          <option value="労働安全衛生法">労働安全衛生法</option>
-          <option value="労働者災害補償保険法">労働者災害補償保険法</option>
-          <option value="雇用保険法">雇用保険法</option>
-          <option value="労働保険徴収法">労働保険徴収法</option>
-          <option value="健康保険法">健康保険法</option>
-          <option value="国民年金法">国民年金法</option>
-          <option value="厚生年金保険法">厚生年金保険法</option>
+          <option value="労働基準法">労働基準法</option><option value="労働安全衛生法">労働安全衛生法</option>
+          <option value="労働者災害補償保険法">労働者災害補償保険法</option><option value="雇用保険法">雇用保険法</option>
+          <option value="労働保険徴収法">労働保険徴収法</option><option value="健康保険法">健康保険法</option>
+          <option value="国民年金法">国民年金法</option><option value="厚生年金保険法">厚生年金保険法</option>
           <option value="社会保険に関する一般常識">社会保険に関する一般常識</option>
-          <option value="労働に関する一般常識">労働に関する一般常識</option>
-          <option value="その他">その他</option>
+          <option value="労働に関する一般常識">労働に関する一般常識</option><option value="その他">その他</option>
         </select>
       </div>
-      <div class="subject-select">
-        <label for="editTime">学習時間</label>
-        <input type="text" id="editTime" placeholder="例: 1:30">
-      </div>
+      <div class="subject-select"><label for="editTime">学習時間</label><input type="text" id="editTime" placeholder="例: 1:30"></div>
       <div class="modal-buttons">
         <button class="start-btn" onclick="saveEdit()">保存</button>
         <button class="reset-btn" onclick="closeEditModal()">キャンセル</button>
@@ -1223,1508 +468,553 @@
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script>
-    // グローバル変数
-    let startTime = null;
-    let elapsedTime = 0;
-    let timerInterval = null;
-    let isPaused = false;
-    let pausedTime = 0;
-    let studyRecords = [];
-    let sheetData = {};
-    let trendChartInstance = null;
-    let weekdayChartInstance = null;
-    let editingIndex = -1;
-    
-    const subjects = [
-      '労働基準法',
-      '労働安全衛生法',
-      '労働者災害補償保険法',
-      '雇用保険法',
-      '労働保険徴収法',
-      '健康保険法',
-      '国民年金法',
-      '厚生年金保険法',
-      '社会保険に関する一般常識',
-      '労働に関する一般常識',
-      'その他'
+    // ===== GLOBAL VARIABLES =====
+    let startTime=null,elapsedTime=0,timerInterval=null,isPaused=false,pausedTime=0;
+    let studyRecords=[],sheetData={},trendChartInstance=null,weekdayChartInstance=null,editingIndex=-1;
+    let weekdayChartPeriod='all',currentReportType='today';
+
+    const subjects=['労働基準法','労働安全衛生法','労働者災害補償保険法','雇用保険法','労働保険徴収法','健康保険法','国民年金法','厚生年金保険法','社会保険に関する一般常識','労働に関する一般常識','その他'];
+    const subjectTargets={'労働基準法':120,'労働安全衛生法':80,'労働者災害補償保険法':120,'雇用保険法':120,'労働保険徴収法':70,'健康保険法':130,'国民年金法':150,'厚生年金保険法':150,'社会保険に関する一般常識':80,'労働に関する一般常識':80,'その他':0};
+    const subjectColors=['#e94560','#f59e0b','#10b981','#ef4444','#8b5cf6','#ec4899','#06b6d4','#f97316','#14b8a6','#6366f1','#84cc16'];
+
+    // ===== GAME SYSTEM DATA =====
+    const titleMap=[{min:1,max:5,t:'見習い書生'},{min:6,max:10,t:'法律初心者'},{min:11,max:20,t:'勤勉な学徒'},{min:21,max:30,t:'法律戦士'},{min:31,max:40,t:'熟練の修行者'},{min:41,max:50,t:'法の守護者'},{min:51,max:60,t:'伝説の挑戦者'},{min:61,max:70,t:'社労士候補生'},{min:71,max:80,t:'法律の達人'},{min:81,max:90,t:'合格請負人'},{min:91,max:99,t:'社労士マスター'}];
+    const weapons=[{lv:1,name:'鉛筆',icon:'\u270F\uFE0F',stat:'ATK 1'},{lv:5,name:'ボールペン',icon:'\u{1F58A}\uFE0F',stat:'ATK 3'},{lv:10,name:'マーカーペン',icon:'\u{1F58D}\uFE0F',stat:'ATK 5'},{lv:15,name:'参考書',icon:'\u{1F4D6}',stat:'ATK 8'},{lv:20,name:'六法全書',icon:'\u{1F4DA}',stat:'ATK 12'},{lv:30,name:'電卓',icon:'\u{1F5A9}',stat:'ATK 18'},{lv:40,name:'合格の盾',icon:'\u{1F6E1}\uFE0F',stat:'DEF 25'},{lv:50,name:'社労士の剣',icon:'\u2694\uFE0F',stat:'ATK 35'},{lv:60,name:'伝説の法典',icon:'\u{1F4DC}',stat:'ATK 50'},{lv:70,name:'究極の知識',icon:'\u{1F4A1}',stat:'ATK 70'},{lv:80,name:'合格の光',icon:'\u2728',stat:'ATK 100'}];
+    const bosses=[
+      {subject:'労働基準法',name:'ブラック企業の魔王',icon:'\u{1F47F}',hp:7200},
+      {subject:'労働安全衛生法',name:'危険の悪魔',icon:'\u{1F525}',hp:4800},
+      {subject:'労働者災害補償保険法',name:'災害の番人',icon:'\u{1F30A}',hp:7200},
+      {subject:'雇用保険法',name:'失業の影',icon:'\u{1F47B}',hp:7200},
+      {subject:'労働保険徴収法',name:'徴収の鬼',icon:'\u{1F4B0}',hp:4200},
+      {subject:'健康保険法',name:'病魔の王',icon:'\u{1F9DF}',hp:7800},
+      {subject:'国民年金法',name:'年金の守護竜',icon:'\u{1F409}',hp:9000},
+      {subject:'厚生年金保険法',name:'厚生の巨人',icon:'\u{1F9CC}',hp:9000},
+      {subject:'社会保険に関する一般常識',name:'常識の迷宮主',icon:'\u{1F9E0}',hp:4800},
+      {subject:'労働に関する一般常識',name:'労働の賢者',icon:'\u{1F9D9}',hp:4800}
     ];
-    
-    // 科目別推定勉強時間（時間）
-    const subjectTargets = {
-      '労働基準法': 120,
-      '労働安全衛生法': 80,
-      '労働者災害補償保険法': 120,
-      '雇用保険法': 120,
-      '労働保険徴収法': 70,
-      '健康保険法': 130,
-      '国民年金法': 150,
-      '厚生年金保険法': 150,
-      '社会保険に関する一般常識': 80,
-      '労働に関する一般常識': 80,
-      'その他': 0
-    };
-    
-    // 科目別の色
-    const subjectColors = [
-      '#667eea', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6',
-      '#ec4899', '#06b6d4', '#f97316', '#14b8a6', '#6366f1', '#84cc16'
+    const badges=[
+      {id:'first',name:'初めの一歩',icon:'\u{1F463}',desc:'初めて勉強を記録',check:r=>r.length>0},
+      {id:'three',name:'三日坊主卒業',icon:'\u{1F525}',desc:'3日連続で勉強',check:(r,c)=>c>=3},
+      {id:'week',name:'一週間の戦士',icon:'\u2694\uFE0F',desc:'7日連続で勉強',check:(r,c)=>c>=7},
+      {id:'iron',name:'鉄人',icon:'\u{1F9BE}',desc:'30日連続で勉強',check:(r,c)=>c>=30},
+      {id:'h100',name:'100時間の壁',icon:'\u{1F4AA}',desc:'累計100時間突破',check:r=>r.reduce((s,x)=>s+x.minutes,0)>=6000},
+      {id:'h500',name:'マラソンランナー',icon:'\u{1F3C3}',desc:'累計500時間突破',check:r=>r.reduce((s,x)=>s+x.minutes,0)>=30000},
+      {id:'h1000',name:'千の高み',icon:'\u{1F451}',desc:'累計1000時間突破',check:r=>r.reduce((s,x)=>s+x.minutes,0)>=60000},
+      {id:'allsub',name:'全科目制覇',icon:'\u{1F30D}',desc:'全科目で勉強記録あり',check:r=>{const s=new Set(r.map(x=>x.subject));return subjects.filter(x=>x!=='その他').every(x=>s.has(x))}},
+      {id:'marathon',name:'夜明けの学徒',icon:'\u{1F305}',desc:'1日3時間以上勉強',check:r=>{const d={};r.forEach(x=>{d[x.date]=(d[x.date]||0)+x.minutes});return Object.values(d).some(v=>v>=180)}},
+      {id:'master',name:'科目マスター',icon:'\u{1F393}',desc:'1科目の目標時間達成',check:r=>{const d={};r.forEach(x=>{d[x.subject]=(d[x.subject]||0)+x.minutes});return subjects.some(s=>subjectTargets[s]>0&&(d[s]||0)>=subjectTargets[s]*60)}}
     ];
-    
-    // 初期化
-    window.onload = function() {
-      updateDateDisplay();
-      loadRecords();
-      loadSheetData();
-      generateSheetRows();
-      updateSheetSums();
-      updateLogTable();
+
+    // ===== AI ADVISOR DATA =====
+    const aiData={
+      '労働基準法':{points:['労働時間・休憩・休日の原則と例外（36協定）が最頻出。変形労働時間制の種類と要件も重要。','解雇制限・解雇予告の要件を正確に暗記。解雇予告手当の計算方法も出る。','就業規則の作成義務（常時10人以上）と届出義務の違いに注意。絶対的必要記載事項を覚える。','賃金支払いの5原則（通貨払い・直接払い・全額払い・毎月1回以上・一定期日払い）は必ず出る。','年次有給休暇の付与要件（6ヶ月継続勤務・8割以上出勤）、日数・時効（2年）を整理。'],strategy:'過去問での出題頻度が最も高い科目。条文の数字（日数、期間、金額）を正確に覚えることが鍵。'},
+      '労働安全衛生法':{points:['安全衛生管理体制（事業場規模別の設置義務）を表で整理。総括安全衛生管理者・安全管理者・衛生管理者・産業医の選任基準。','健康診断の種類（一般・特殊・臨時）と実施時期を正確に覚える。結果の保存期間にも注意。','ストレスチェック制度の対象事業場（常時50人以上）と実施義務。面接指導の流れも把握。','安全衛生委員会（業種・50人以上）と衛生委員会（50人以上）の設置基準の違い。'],strategy:'数字の暗記が重要。事業場規模と業種による設置義務の違いを表にまとめると効率的。'},
+      '労働者災害補償保険法':{points:['業務災害と通勤災害の認定基準の違いが重要。「業務遂行性」と「業務起因性」の概念を理解する。','給付の種類（療養・休業・障害・遺族・葬祭・傷病・介護）と給付基礎日額の計算方法。','特別加入制度の対象者（中小事業主・一人親方等・海外派遣者）と手続き。','二次健康診断等給付の要件。一次健康診断で異常所見が4項目中いずれかで該当。'],strategy:'給付の種類ごとの要件・内容・期間を横断的に整理する。通勤災害の「合理的な経路及び方法」の判断基準も頻出。'},
+      '雇用保険法':{points:['基本手当の受給要件（離職前2年間に12ヶ月以上の被保険者期間）・給付日数・待期期間（7日間）。','高年齢雇用継続給付の支給要件（60歳以上65歳未満、賃金75%未満に低下）と支給額の計算。','育児休業給付金（休業開始時賃金日額×支給日数の67%、6ヶ月経過後50%）の計算方法。','教育訓練給付の種類（一般・専門実践・特定一般）と支給要件。専門実践は最大70%給付。'],strategy:'数字が非常に多い科目。給付日数の表（年齢×被保険者期間）は完全暗記が必要。'},
+      '労働保険徴収法':{points:['概算保険料・確定保険料の計算と申告期限。年度更新の手続きの流れを把握。','メリット制の適用要件（連続3年間100人以上等）と計算方法。','継続事業の一括と有期事業の一括の違い。それぞれの要件と手続き。','労働保険料の負担割合。雇用保険は事業主と労働者で負担、労災保険は全額事業主負担。'],strategy:'計算問題が出やすい。概算保険料と確定保険料の計算手順を繰り返し練習する。'},
+      '健康保険法':{points:['被保険者資格の取得日（入社日）・喪失日（退職日の翌日）の考え方。適用除外者も覚える。','被扶養者の認定基準（年収130万円未満、60歳以上・障害者は180万円未満）。','傷病手当金（標準報酬日額の2/3、最長1年6ヶ月）・出産手当金の支給要件と計算。','高額療養費制度の自己負担限度額。所得区分による計算式を覚える。','任意継続被保険者の要件（資格喪失日前日まで継続2ヶ月以上、20日以内に届出）。'],strategy:'社会保険の中核科目。給付の種類が多いので、一覧表を作って横断的に比較すると効果的。'},
+      '国民年金法':{points:['被保険者の種別（第1号：自営業等、第2号：会社員等、第3号：第2号の被扶養配偶者）。','老齢基礎年金の受給資格期間（10年以上）と年金額の計算（満額×納付月数/480）。','障害基礎年金の等級（1級・2級のみ）と支給要件。初診日要件と保険料納付要件に注意。','遺族基礎年金の受給権者（子のある配偶者または子）と支給要件。','保険料免除制度の種類（全額・3/4・半額・1/4免除、学生納付特例、納付猶予）と年金額への反映。'],strategy:'年金科目は配点が大きい。計算問題に備えて、年金額の計算式と加算額を正確に覚える。'},
+      '厚生年金保険法':{points:['老齢厚生年金の支給開始年齢の経過措置（生年月日による段階的引上げ）。男女の違いに注意。','在職老齢年金の仕組み（基本月額＋総報酬月額相当額が50万円超で一部支給停止）。','加給年金額の加算要件（被保険者期間20年以上、65歳未満の配偶者等）。振替加算との関係。','障害厚生年金の等級（1級〜3級＋障害手当金）と支給要件。障害基礎年金との違い。','離婚時の年金分割（合意分割と3号分割の違い）。按分割合の上限（1/2）に注意。'],strategy:'国民年金法との横断学習が不可欠。両法の給付を対比させて覚えると理解が深まる。'},
+      '社会保険に関する一般常識':{points:['国民健康保険法の被保険者と保険給付の基本。都道府県と市町村の役割分担。','高齢者医療確保法の後期高齢者医療制度（75歳以上）の仕組み。','介護保険法の被保険者（第1号：65歳以上、第2号：40〜64歳）と給付の種類。','社会保険労務士法の業務範囲（1号・2号・3号業務）と欠格事由。','確定拠出年金法（企業型DC・個人型iDeCo）と確定給付企業年金法の概要。'],strategy:'範囲が広いので深追いは禁物。過去問で出た論点を中心に、各法律の基本事項を押さえる。'},
+      '労働に関する一般常識':{points:['労働契約法の基本原則と無期転換ルール（5年超の有期契約→無期転換申込権）。','労働組合法の不当労働行為の類型（不利益取扱い・黄犬契約・団交拒否・支配介入）。','男女雇用機会均等法のポイント。間接差別の禁止とマタニティハラスメント対策。','パートタイム・有期雇用労働法の均等待遇・均衡待遇の考え方。同一労働同一賃金。','最低賃金法の適用と効力。地域別最低賃金と特定最低賃金の違い。'],strategy:'労働経済の統計データ（完全失業率、有効求人倍率等）も出題される。白書の概要に目を通しておく。'}
     };
-    
-    // データ読み込み・保存
-    function loadRecords() {
-      const saved = localStorage.getItem('studyRecords');
-      if (saved) {
-        studyRecords = JSON.parse(saved);
-      }
+
+    // ===== INIT =====
+    window.onload=function(){
+      updateDateDisplay();loadRecords();loadSheetData();generateSheetRows();updateSheetSums();updateLogTable();
+      updateGameUI();initAIAdvisor();
+    };
+
+    // ===== DATA LOAD/SAVE =====
+    function loadRecords(){const s=localStorage.getItem('studyRecords');if(s)studyRecords=JSON.parse(s);}
+    function saveRecords(){localStorage.setItem('studyRecords',JSON.stringify(studyRecords));}
+    function loadSheetData(){const s=localStorage.getItem('sheetData');if(s)sheetData=JSON.parse(s);}
+    function saveSheetData(){localStorage.setItem('sheetData',JSON.stringify(sheetData));}
+
+    // ===== DATE/SHIFT =====
+    function updateDateDisplay(){
+      const t=new Date(),ds=t.getFullYear()+'/'+String(t.getMonth()+1).padStart(2,'0')+'/'+String(t.getDate()).padStart(2,'0');
+      const wd=['日','月','火','水','木','金','土'][t.getDay()];
+      document.getElementById('dateDisplay').textContent='\u{1F4C5} '+ds+' ('+wd+')';
+      document.getElementById('recordDate').value=t.toISOString().split('T')[0];
     }
-    
-    function saveRecords() {
-      localStorage.setItem('studyRecords', JSON.stringify(studyRecords));
+    function getShiftType(date){
+      const s1=new Date('2026-02-06'),s2=new Date('2026-02-10'),s3=new Date('2026-02-12');
+      if(date<s1)return'late';if(date<s2)return'early';if(date<s3)return'rest';
+      const d=Math.floor((date-s3)/(864e5)),p=d%12;
+      if(p<4)return'late';if(p<6)return'rest';if(p<10)return'early';return'rest';
     }
-    
-    function loadSheetData() {
-      const saved = localStorage.getItem('sheetData');
-      if (saved) {
-        sheetData = JSON.parse(saved);
-      }
-    }
-    
-    function saveSheetData() {
-      localStorage.setItem('sheetData', JSON.stringify(sheetData));
-    }
-    
-    // 日付関連
-    function updateDateDisplay() {
-      const today = new Date();
-      const dateStr = today.getFullYear() + '/' + 
-                      String(today.getMonth() + 1).padStart(2, '0') + '/' + 
-                      String(today.getDate()).padStart(2, '0');
-      const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
-      const weekday = weekdays[today.getDay()];
-      
-      document.getElementById('dateDisplay').textContent = `📅 ${dateStr} (${weekday})`;
-      
-      const todayISO = today.toISOString().split('T')[0];
-      document.getElementById('recordDate').value = todayISO;
-    }
-    
-    function getShiftType(date) {
-      const shiftStart = new Date('2026-02-06');
-      const restStart = new Date('2026-02-10');
-      const lateStart = new Date('2026-02-12');
-      
-      if (date < shiftStart) return 'late';
-      if (date < restStart) return 'early';
-      if (date < lateStart) return 'rest';
-      
-      const daysSince = Math.floor((date - lateStart) / (1000 * 60 * 60 * 24));
-      const position = daysSince % 12;
-      
-      if (position < 4) return 'late';
-      if (position < 6) return 'rest';
-      if (position < 10) return 'early';
-      return 'rest';
-    }
-    
-    // タブ切り替え
-    function switchTab(tab) {
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+    // ===== TAB SWITCH =====
+    function switchTab(tab){
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
       event.target.classList.add('active');
-      
-      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-      document.getElementById(tab + '-tab').classList.add('active');
-      
-      if (tab === 'stats') {
-        updateAdvancedStats();
-      }
-      if (tab === 'sheet') {
-        updateSheetSums();
-      }
-      if (tab === 'log') {
-        updateLogTable();
-      }
-      if (tab === 'report') {
-        updateReport();
-      }
+      document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+      document.getElementById(tab+'-tab').classList.add('active');
+      if(tab==='stats')updateAdvancedStats();
+      if(tab==='sheet')updateSheetSums();
+      if(tab==='log')updateLogTable();
+      if(tab==='report')updateReport();
+      if(tab==='game')updateGameUI();
+      if(tab==='ai')updateAIProgress();
     }
-    
-    // タイマー機能
-    function startTimer() {
-      const subject = document.getElementById('subject').value;
-      if (!subject) {
-        showMessage('科目を選択してください', 'error');
-        return;
-      }
-      
-      if (isPaused) {
-        startTime = Date.now() - pausedTime;
-        isPaused = false;
-      } else {
-        startTime = Date.now() - elapsedTime;
-      }
-      
-      timerInterval = setInterval(updateTimer, 100);
-      
-      document.getElementById('startBtn').disabled = true;
-      document.getElementById('stopBtn').disabled = false;
-      document.getElementById('subject').disabled = true;
-      hideMessage();
+
+    // ===== TIMER =====
+    function startTimer(){
+      const sub=document.getElementById('subject').value;
+      if(!sub){showMessage('科目を選択してください','error');return;}
+      if(isPaused){startTime=Date.now()-pausedTime;isPaused=false;}else{startTime=Date.now()-elapsedTime;}
+      timerInterval=setInterval(updateTimer,100);
+      document.getElementById('startBtn').disabled=true;document.getElementById('stopBtn').disabled=false;
+      document.getElementById('subject').disabled=true;hideMessage();
     }
-    
-    function stopTimer() {
-      clearInterval(timerInterval);
-      pausedTime = Date.now() - startTime;
-      isPaused = true;
-      
-      document.getElementById('startBtn').disabled = false;
-      document.getElementById('stopBtn').disabled = true;
-      
+    function stopTimer(){
+      clearInterval(timerInterval);pausedTime=Date.now()-startTime;isPaused=true;
+      document.getElementById('startBtn').disabled=false;document.getElementById('stopBtn').disabled=true;
       updateElapsedInfo();
     }
-    
-    function resetTimer() {
-      clearInterval(timerInterval);
-      startTime = null;
-      elapsedTime = 0;
-      pausedTime = 0;
-      isPaused = false;
-      
-      document.getElementById('timer').textContent = '00:00:00';
-      document.getElementById('startBtn').disabled = false;
-      document.getElementById('stopBtn').disabled = true;
-      document.getElementById('subject').disabled = false;
-      document.getElementById('elapsedInfo').textContent = '';
-      hideMessage();
+    function resetTimer(){
+      clearInterval(timerInterval);startTime=null;elapsedTime=0;pausedTime=0;isPaused=false;
+      document.getElementById('timer').textContent='00:00:00';
+      document.getElementById('startBtn').disabled=false;document.getElementById('stopBtn').disabled=true;
+      document.getElementById('subject').disabled=false;document.getElementById('elapsedInfo').textContent='';hideMessage();
     }
-    
-    function updateTimer() {
-      elapsedTime = Date.now() - startTime;
-      
-      const hours = Math.floor(elapsedTime / 3600000);
-      const minutes = Math.floor((elapsedTime % 3600000) / 60000);
-      const seconds = Math.floor((elapsedTime % 60000) / 1000);
-      
-      document.getElementById('timer').textContent = 
-        pad(hours) + ':' + pad(minutes) + ':' + pad(seconds);
+    function updateTimer(){
+      elapsedTime=Date.now()-startTime;
+      const h=Math.floor(elapsedTime/36e5),m=Math.floor((elapsedTime%36e5)/6e4),s=Math.floor((elapsedTime%6e4)/1e3);
+      document.getElementById('timer').textContent=pad(h)+':'+pad(m)+':'+pad(s);
     }
-    
-    function updateElapsedInfo() {
-      const minutes = Math.floor(elapsedTime / 60000);
-      const hours = (minutes / 60).toFixed(2);
-      document.getElementById('elapsedInfo').textContent = 
-        `経過時間: ${minutes}分 (${hours}時間)`;
+    function updateElapsedInfo(){
+      const m=Math.floor(elapsedTime/6e4),h=(m/60).toFixed(2);
+      document.getElementById('elapsedInfo').textContent='\u7D4C\u904E\u6642\u9593: '+m+'\u5206 ('+h+'\u6642\u9593)';
     }
-    
-    function pad(num) {
-      return num.toString().padStart(2, '0');
+    function pad(n){return n.toString().padStart(2,'0');}
+
+    function recordTime(){
+      const sub=document.getElementById('subject').value;
+      if(!sub){showMessage('科目を選択してください','error');return;}
+      const mi=document.getElementById('manualTime').value.trim();
+      let minutes=0;
+      if(mi){minutes=parseManualTime(mi);if(minutes===0){showMessage('正しい時間形式で入力してください (例: 1:30)','error');return;}}
+      else{minutes=Math.floor(elapsedTime/6e4);if(minutes===0){showMessage('1分以上の学習時間を記録してください','error');return;}}
+      const sd=document.getElementById('recordDate').value;
+      if(!sd){showMessage('日付を選択してください','error');return;}
+      const rd=new Date(sd+'T00:00:00'),now=new Date(),dk=sd;
+      const rec={date:dk,time:now.toTimeString().split(' ')[0].substring(0,5),subject:sub,minutes:minutes,weekday:['日','月','火','水','木','金','土'][rd.getDay()]};
+      const oldLevel=calcLevel();
+      studyRecords.push(rec);saveRecords();
+      if(!sheetData[dk])sheetData[dk]={};if(!sheetData[dk][sub])sheetData[dk][sub]=0;
+      sheetData[dk][sub]+=minutes;saveSheetData();updateSheetRow(dk);updateSheetSums();updateLogTable();
+      // Game effects
+      const newLevel=calcLevel();
+      spawnParticles(window.innerWidth/2,window.innerHeight/2,30);
+      if(minutes>=30)document.body.classList.add('screen-shake');
+      setTimeout(()=>document.body.classList.remove('screen-shake'),300);
+      if(newLevel>oldLevel)showLevelUp(newLevel);
+      updateGameUI();
+      const src=mi?'(手動入力)':'';
+      showMessage('\u2694\uFE0F '+dk+' '+sub+' '+minutes+'\u5206\u3092\u8A18\u9332\uFF01 '+minutes*10+'XP\u7372\u5F97\uFF01 '+src,'success');
+      setTimeout(()=>{resetTimer();document.getElementById('manualTime').value='';},2000);
     }
-    
-    function recordTime() {
-      const subject = document.getElementById('subject').value;
-      
-      if (!subject) {
-        showMessage('科目を選択してください', 'error');
-        return;
+    function parseManualTime(input){const p=input.split(':');if(p.length!==2)return 0;const h=parseInt(p[0]),m=parseInt(p[1]);if(isNaN(h)||isNaN(m)||h<0||m<0||m>=60)return 0;return h*60+m;}
+
+    // ===== SPREADSHEET =====
+    function generateSheetRows(){
+      const tb=document.getElementById('sheetBody'),sd=new Date('2026-02-04'),ed=new Date('2026-08-23'),wd=['日','月','火','水','木','金','土'];
+      let html='',cd=new Date(sd);
+      while(cd<=ed){
+        const dk=cd.toISOString().split('T')[0],w=wd[cd.getDay()],rem=Math.floor((ed-cd)/864e5),st=getShiftType(cd),sc='shift-'+st;
+        let wc='';if(w==='土')wc='weekday-sat';if(w==='日')wc='weekday-sun';
+        html+='<tr data-date="'+dk+'"><td class="date-cell '+sc+'">'+dk+'</td><td class="'+sc+' '+wc+'">'+w+'</td><td class="'+sc+'">'+rem+'</td>';
+        subjects.forEach((s,i)=>{const v=sheetData[dk]?.[s]||'',ts=v?minutesToTimeString(v):'',hv=v?'has-value':'';
+          html+='<td class="'+sc+'"><input type="text" class="'+hv+'" data-date="'+dk+'" data-subject="'+s+'" value="'+ts+'" onchange="updateSheetCell(this)" placeholder="00:00"></td>';});
+        html+='<td class="total-cell '+sc+'" id="total-'+dk+'">00:00</td></tr>';
+        cd.setDate(cd.getDate()+1);
       }
-      
-      const manualTimeInput = document.getElementById('manualTime').value.trim();
-      let minutes = 0;
-      
-      if (manualTimeInput) {
-        minutes = parseManualTime(manualTimeInput);
-        if (minutes === 0) {
-          showMessage('正しい時間形式で入力してください (例: 1:30)', 'error');
-          return;
-        }
-      } else {
-        minutes = Math.floor(elapsedTime / 60000);
-        if (minutes === 0) {
-          showMessage('1分以上の学習時間を記録してください、または時間を直接入力してください', 'error');
-          return;
-        }
-      }
-      
-      const selectedDate = document.getElementById('recordDate').value;
-      if (!selectedDate) {
-        showMessage('日付を選択してください', 'error');
-        return;
-      }
-      
-      const recordDate = new Date(selectedDate + 'T00:00:00');
-      const now = new Date();
-      const dateKey = selectedDate;
-      
-      const record = {
-        date: dateKey,
-        time: now.toTimeString().split(' ')[0].substring(0, 5),
-        subject: subject,
-        minutes: minutes,
-        weekday: ['日', '月', '火', '水', '木', '金', '土'][recordDate.getDay()]
-      };
-      
-      studyRecords.push(record);
-      saveRecords();
-      
-      if (!sheetData[dateKey]) sheetData[dateKey] = {};
-      if (!sheetData[dateKey][subject]) sheetData[dateKey][subject] = 0;
-      sheetData[dateKey][subject] += minutes;
-      saveSheetData();
-      updateSheetRow(dateKey);
-      updateSheetSums();
-      updateLogTable();
-      
-      const source = manualTimeInput ? '(手動入力)' : '';
-      showMessage(`✅ ${dateKey} ${subject} ${minutes}分を記録しました！ ${source}`, 'success');
-      setTimeout(() => {
-        resetTimer();
-        document.getElementById('manualTime').value = '';
-      }, 2000);
+      tb.innerHTML=html;updateAllTotals();
     }
-    
-    function parseManualTime(input) {
-      const parts = input.split(':');
-      if (parts.length !== 2) return 0;
-      
-      const hours = parseInt(parts[0]);
-      const mins = parseInt(parts[1]);
-      
-      if (isNaN(hours) || isNaN(mins) || hours < 0 || mins < 0 || mins >= 60) {
-        return 0;
-      }
-      
-      return hours * 60 + mins;
+    function updateSheetCell(input){
+      const d=input.dataset.date,s=input.dataset.subject,v=input.value.trim();
+      if(!v){input.classList.remove('has-value');if(sheetData[d])delete sheetData[d][s];saveSheetData();updateSheetRow(d);updateSheetSums();return;}
+      const m=timeStringToMinutes(v);
+      if(m>0){if(!sheetData[d])sheetData[d]={};sheetData[d][s]=m;input.value=minutesToTimeString(m);input.classList.add('has-value');saveSheetData();updateSheetRow(d);updateSheetSums();}
+      else{input.value='';input.classList.remove('has-value');}
     }
-    
-    // スプレッドシート機能
-    function generateSheetRows() {
-      const tbody = document.getElementById('sheetBody');
-      const startDate = new Date('2026-02-04');
-      const examDate = new Date('2026-08-23');
-      const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
-      
-      let html = '';
-      let currentDate = new Date(startDate);
-      
-      while (currentDate <= examDate) {
-        const dateKey = currentDate.toISOString().split('T')[0];
-        const weekday = weekdays[currentDate.getDay()];
-        const remaining = Math.floor((examDate - currentDate) / (1000 * 60 * 60 * 24));
-        const shiftType = getShiftType(currentDate);
-        const shiftClass = `shift-${shiftType}`;
-        
-        let weekdayClass = '';
-        if (weekday === '土') weekdayClass = 'weekday-sat';
-        if (weekday === '日') weekdayClass = 'weekday-sun';
-        
-        html += `<tr data-date="${dateKey}">`;
-        html += `<td class="date-cell ${shiftClass}">${dateKey}</td>`;
-        html += `<td class="${shiftClass} ${weekdayClass}">${weekday}</td>`;
-        html += `<td class="${shiftClass}">${remaining}</td>`;
-        
-        subjects.forEach((subject, idx) => {
-          const value = sheetData[dateKey]?.[subject] || '';
-          const timeStr = value ? minutesToTimeString(value) : '';
-          const hasValueClass = value ? 'has-value' : '';
-          html += `<td class="${shiftClass}"><input type="text" class="${hasValueClass}" data-date="${dateKey}" data-subject="${subject}" value="${timeStr}" onchange="updateSheetCell(this)" placeholder="00:00"></td>`;
-        });
-        
-        html += `<td class="total-cell ${shiftClass}" id="total-${dateKey}">00:00</td>`;
-        html += `</tr>`;
-        
-        currentDate.setDate(currentDate.getDate() + 1);
-      }
-      
-      tbody.innerHTML = html;
-      updateAllTotals();
+    function updateSheetRow(dk){
+      const row=document.querySelector('tr[data-date="'+dk+'"]');if(!row)return;
+      subjects.forEach(s=>{const inp=row.querySelector('input[data-subject="'+s+'"]'),v=sheetData[dk]?.[s]||0;
+        inp.value=v>0?minutesToTimeString(v):'';v>0?inp.classList.add('has-value'):inp.classList.remove('has-value');});
+      updateRowTotal(dk);
     }
-    
-    function updateSheetCell(input) {
-      const date = input.dataset.date;
-      const subject = input.dataset.subject;
-      const value = input.value.trim();
-      
-      if (!value) {
-        input.classList.remove('has-value');
-        if (sheetData[date]) delete sheetData[date][subject];
-        saveSheetData();
-        updateSheetRow(date);
-        updateSheetSums();
-        return;
-      }
-      
-      const minutes = timeStringToMinutes(value);
-      if (minutes > 0) {
-        if (!sheetData[date]) sheetData[date] = {};
-        sheetData[date][subject] = minutes;
-        input.value = minutesToTimeString(minutes);
-        input.classList.add('has-value');
-        saveSheetData();
-        updateSheetRow(date);
-        updateSheetSums();
-      } else {
-        input.value = '';
-        input.classList.remove('has-value');
-      }
+    function updateRowTotal(dk){
+      let t=0;subjects.forEach(s=>{t+=sheetData[dk]?.[s]||0;});
+      const c=document.getElementById('total-'+dk);if(c)c.textContent=minutesToTimeString(t);
     }
-    
-    function updateSheetRow(dateKey) {
-      const row = document.querySelector(`tr[data-date="${dateKey}"]`);
-      if (!row) return;
-      
-      subjects.forEach(subject => {
-        const input = row.querySelector(`input[data-subject="${subject}"]`);
-        const value = sheetData[dateKey]?.[subject] || 0;
-        input.value = value > 0 ? minutesToTimeString(value) : '';
-        if (value > 0) {
-          input.classList.add('has-value');
-        } else {
-          input.classList.remove('has-value');
-        }
-      });
-      
-      updateRowTotal(dateKey);
+    function updateAllTotals(){Object.keys(sheetData).forEach(d=>updateRowTotal(d));}
+    function updateSheetSums(){
+      const sums=new Array(11).fill(0);let gt=0;
+      Object.values(sheetData).forEach(dd=>{subjects.forEach((s,i)=>{const v=dd[s]||0;sums[i]+=v;gt+=v;});});
+      subjects.forEach((s,i)=>{const c=document.getElementById('sum-'+i);if(c)c.textContent=minutesToTimeString(sums[i]);});
+      const tc=document.getElementById('sum-total');if(tc)tc.textContent=minutesToTimeString(gt);
+      const td=document.getElementById('sheetTotalTime');if(td)td.textContent=minutesToTimeString(gt);
     }
-    
-    function updateRowTotal(dateKey) {
-      let total = 0;
-      subjects.forEach(subject => {
-        total += sheetData[dateKey]?.[subject] || 0;
-      });
-      
-      const cell = document.getElementById(`total-${dateKey}`);
-      if (cell) cell.textContent = minutesToTimeString(total);
+    function syncFromTimer(){
+      const tmp={};studyRecords.forEach(r=>{if(!tmp[r.date])tmp[r.date]={};if(!tmp[r.date][r.subject])tmp[r.date][r.subject]=0;tmp[r.date][r.subject]+=r.minutes;});
+      sheetData=tmp;saveSheetData();
+      document.querySelectorAll('#sheetBody input').forEach(inp=>{const d=inp.dataset.date,s=inp.dataset.subject,v=sheetData[d]?.[s]||0;
+        inp.value=v>0?minutesToTimeString(v):'';v>0?inp.classList.add('has-value'):inp.classList.remove('has-value');});
+      updateAllTotals();updateSheetSums();alert('\u2705 同期完了');
     }
-    
-    function updateAllTotals() {
-      const dates = Object.keys(sheetData);
-      dates.forEach(date => updateRowTotal(date));
+
+    // ===== LOG =====
+    function updateLogTable(){
+      const tb=document.getElementById('logTableBody');
+      if(studyRecords.length===0){tb.innerHTML='<tr><td colspan="5" style="text-align:center;padding:40px;color:rgba(255,255,255,0.4);">まだ記録がありません</td></tr>';return;}
+      const sorted=[...studyRecords].reverse();let html='';
+      sorted.forEach((r,i)=>{const ai=studyRecords.length-1-i;
+        html+='<tr><td>'+r.date+'</td><td>'+r.time+'</td><td style="font-weight:bold;">'+r.subject+'</td><td style="font-family:Courier New,monospace;color:#ffd93d;font-weight:bold;">'+minutesToTimeString(r.minutes)+'</td><td><div class="log-actions"><button class="edit-btn" onclick="openEditModal('+ai+')">編集</button><button class="delete-btn" onclick="deleteRecord('+ai+')">削除</button></div></td></tr>';});
+      tb.innerHTML=html;
     }
-    
-    function updateSheetSums() {
-      const sums = new Array(11).fill(0);
-      let grandTotal = 0;
-      
-      Object.values(sheetData).forEach(dayData => {
-        subjects.forEach((subject, idx) => {
-          const value = dayData[subject] || 0;
-          sums[idx] += value;
-          grandTotal += value;
-        });
-      });
-      
-      subjects.forEach((subject, idx) => {
-        const cell = document.getElementById(`sum-${idx}`);
-        if (cell) cell.textContent = minutesToTimeString(sums[idx]);
-      });
-      
-      const totalCell = document.getElementById('sum-total');
-      if (totalCell) totalCell.textContent = minutesToTimeString(grandTotal);
-      
-      const totalDisplay = document.getElementById('sheetTotalTime');
-      if (totalDisplay) totalDisplay.textContent = minutesToTimeString(grandTotal);
+    function openEditModal(i){editingIndex=i;const r=studyRecords[i];document.getElementById('editDate').value=r.date;document.getElementById('editSubject').value=r.subject;document.getElementById('editTime').value=minutesToTimeString(r.minutes);document.getElementById('editModal').classList.add('active');}
+    function closeEditModal(){document.getElementById('editModal').classList.remove('active');editingIndex=-1;}
+    function saveEdit(){
+      if(editingIndex===-1)return;const old=studyRecords[editingIndex],nd=document.getElementById('editDate').value,ns=document.getElementById('editSubject').value,nt=document.getElementById('editTime').value,nm=timeStringToMinutes(nt);
+      if(nm===0){alert('正しい時間形式で入力してください');return;}
+      if(sheetData[old.date]&&sheetData[old.date][old.subject]){sheetData[old.date][old.subject]-=old.minutes;if(sheetData[old.date][old.subject]<=0)delete sheetData[old.date][old.subject];}
+      studyRecords[editingIndex]={date:nd,time:old.time,subject:ns,minutes:nm,weekday:['日','月','火','水','木','金','土'][new Date(nd+'T00:00:00').getDay()]};
+      if(!sheetData[nd])sheetData[nd]={};if(!sheetData[nd][ns])sheetData[nd][ns]=0;sheetData[nd][ns]+=nm;
+      saveRecords();saveSheetData();updateSheetRow(old.date);updateSheetRow(nd);updateSheetSums();updateLogTable();closeEditModal();updateGameUI();alert('\u2705 更新完了');
     }
-    
-    function syncFromTimer() {
-      const tempData = {};
-      studyRecords.forEach(record => {
-        if (!tempData[record.date]) tempData[record.date] = {};
-        if (!tempData[record.date][record.subject]) tempData[record.date][record.subject] = 0;
-        tempData[record.date][record.subject] += record.minutes;
-      });
-      
-      sheetData = tempData;
-      saveSheetData();
-      
-      document.querySelectorAll('#sheetBody input').forEach(input => {
-        const date = input.dataset.date;
-        const subject = input.dataset.subject;
-        const value = sheetData[date]?.[subject] || 0;
-        input.value = value > 0 ? minutesToTimeString(value) : '';
-        if (value > 0) {
-          input.classList.add('has-value');
-        } else {
-          input.classList.remove('has-value');
-        }
-      });
-      
-      updateAllTotals();
-      updateSheetSums();
-      
-      alert('✅ タイマーの記録をシートに同期しました');
+    function deleteRecord(i){
+      if(!confirm('この記録を削除しますか？'))return;const r=studyRecords[i];
+      if(sheetData[r.date]&&sheetData[r.date][r.subject]){sheetData[r.date][r.subject]-=r.minutes;if(sheetData[r.date][r.subject]<=0)delete sheetData[r.date][r.subject];}
+      studyRecords.splice(i,1);saveRecords();saveSheetData();updateSheetRow(r.date);updateSheetSums();updateLogTable();updateGameUI();alert('\u2705 削除完了');
     }
-    
-    // 記録ログ機能
-    function updateLogTable() {
-      const tbody = document.getElementById('logTableBody');
-      
-      if (studyRecords.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #9ca3af;">まだ記録がありません</td></tr>';
-        return;
-      }
-      
-      const sorted = [...studyRecords].reverse();
-      let html = '';
-      
-      sorted.forEach((record, index) => {
-        const actualIndex = studyRecords.length - 1 - index;
-        html += `
-          <tr>
-            <td>${record.date}</td>
-            <td>${record.time}</td>
-            <td style="font-weight: bold;">${record.subject}</td>
-            <td style="font-family: 'Courier New', monospace; color: #667eea; font-weight: bold;">${minutesToTimeString(record.minutes)}</td>
-            <td>
-              <div class="log-actions">
-                <button class="edit-btn" onclick="openEditModal(${actualIndex})">編集</button>
-                <button class="delete-btn" onclick="deleteRecord(${actualIndex})">削除</button>
-              </div>
-            </td>
-          </tr>
-        `;
-      });
-      
-      tbody.innerHTML = html;
-    }
-    
-    function openEditModal(index) {
-      editingIndex = index;
-      const record = studyRecords[index];
-      
-      document.getElementById('editDate').value = record.date;
-      document.getElementById('editSubject').value = record.subject;
-      document.getElementById('editTime').value = minutesToTimeString(record.minutes);
-      
-      document.getElementById('editModal').classList.add('active');
-    }
-    
-    function closeEditModal() {
-      document.getElementById('editModal').classList.remove('active');
-      editingIndex = -1;
-    }
-    
-    function saveEdit() {
-      if (editingIndex === -1) return;
-      
-      const oldRecord = studyRecords[editingIndex];
-      const newDate = document.getElementById('editDate').value;
-      const newSubject = document.getElementById('editSubject').value;
-      const newTime = document.getElementById('editTime').value;
-      const newMinutes = timeStringToMinutes(newTime);
-      
-      if (newMinutes === 0) {
-        alert('正しい時間形式で入力してください');
-        return;
-      }
-      
-      // シートデータから古い記録を削除
-      if (sheetData[oldRecord.date] && sheetData[oldRecord.date][oldRecord.subject]) {
-        sheetData[oldRecord.date][oldRecord.subject] -= oldRecord.minutes;
-        if (sheetData[oldRecord.date][oldRecord.subject] <= 0) {
-          delete sheetData[oldRecord.date][oldRecord.subject];
-        }
-      }
-      
-      // 記録を更新
-      studyRecords[editingIndex] = {
-        date: newDate,
-        time: oldRecord.time,
-        subject: newSubject,
-        minutes: newMinutes,
-        weekday: ['日', '月', '火', '水', '木', '金', '土'][new Date(newDate + 'T00:00:00').getDay()]
-      };
-      
-      // シートデータに新しい記録を追加
-      if (!sheetData[newDate]) sheetData[newDate] = {};
-      if (!sheetData[newDate][newSubject]) sheetData[newDate][newSubject] = 0;
-      sheetData[newDate][newSubject] += newMinutes;
-      
-      saveRecords();
-      saveSheetData();
-      updateSheetRow(oldRecord.date);
-      updateSheetRow(newDate);
-      updateSheetSums();
-      updateLogTable();
-      closeEditModal();
-      
-      alert('✅ 記録を更新しました');
-    }
-    
-    function deleteRecord(index) {
-      if (!confirm('この記録を削除しますか？')) return;
-      
-      const record = studyRecords[index];
-      
-      // シートデータから削除
-      if (sheetData[record.date] && sheetData[record.date][record.subject]) {
-        sheetData[record.date][record.subject] -= record.minutes;
-        if (sheetData[record.date][record.subject] <= 0) {
-          delete sheetData[record.date][record.subject];
-        }
-      }
-      
-      studyRecords.splice(index, 1);
-      saveRecords();
-      saveSheetData();
-      updateSheetRow(record.date);
-      updateSheetSums();
-      updateLogTable();
-      
-      alert('✅ 記録を削除しました');
-    }
-    
-    // 高度な統計分析
-    function updateAdvancedStats() {
-      const totalMinutes = studyRecords.reduce((sum, r) => sum + r.minutes, 0);
-      document.getElementById('totalAllTime').textContent = minutesToTimeString(totalMinutes);
-      
-      // 今週の学習時間
-      const today = new Date();
-      const weekStart = new Date(today);
-      weekStart.setDate(today.getDate() - today.getDay());
-      weekStart.setHours(0, 0, 0, 0);
-      const weekMinutes = studyRecords
-        .filter(r => new Date(r.date) >= weekStart)
-        .reduce((sum, r) => sum + r.minutes, 0);
-      document.getElementById('weekTime').textContent = minutesToTimeString(weekMinutes);
-      
-      // 今月の学習時間
-      const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-      const monthMinutes = studyRecords
-        .filter(r => new Date(r.date) >= monthStart)
-        .reduce((sum, r) => sum + r.minutes, 0);
-      document.getElementById('monthTime').textContent = minutesToTimeString(monthMinutes);
-      
-      // 学習日数
-      const uniqueDates = [...new Set(studyRecords.map(r => r.date))];
-      document.getElementById('studyDays').textContent = uniqueDates.length;
-      
-      // 早番・遅番・休日の平均
-      const shiftStats = { early: { total: 0, count: 0 }, late: { total: 0, count: 0 }, rest: { total: 0, count: 0 } };
-      
-      studyRecords.forEach(record => {
-        const date = new Date(record.date + 'T00:00:00');
-        const shiftType = getShiftType(date);
-        shiftStats[shiftType].total += record.minutes;
-      });
-      
-      uniqueDates.forEach(dateStr => {
-        const date = new Date(dateStr + 'T00:00:00');
-        const shiftType = getShiftType(date);
-        const dayMinutes = studyRecords
-          .filter(r => r.date === dateStr)
-          .reduce((sum, r) => sum + r.minutes, 0);
-        if (dayMinutes > 0) {
-          shiftStats[shiftType].count++;
-        }
-      });
-      
-      const earlyAvg = shiftStats.early.count > 0 ? shiftStats.early.total / shiftStats.early.count : 0;
-      const lateAvg = shiftStats.late.count > 0 ? shiftStats.late.total / shiftStats.late.count : 0;
-      const restAvg = shiftStats.rest.count > 0 ? shiftStats.rest.total / shiftStats.rest.count : 0;
-      
-      document.getElementById('earlyAvg').textContent = minutesToTimeString(earlyAvg);
-      document.getElementById('lateAvg').textContent = minutesToTimeString(lateAvg);
-      document.getElementById('restAvg').textContent = minutesToTimeString(restAvg);
-      
-      // 試験まで
-      const examDate = new Date('2026-08-23');
-      const daysToExam = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
-      document.getElementById('daysToExam').textContent = daysToExam;
-      
-      // 残り期間の早番・遅番・休日の日数を計算
-      const remainingDays = { early: 0, late: 0, rest: 0 };
-      let currentDate = new Date(today);
-      currentDate.setDate(currentDate.getDate() + 1);
-      
-      while (currentDate <= examDate) {
-        const shiftType = getShiftType(currentDate);
-        remainingDays[shiftType]++;
-        currentDate.setDate(currentDate.getDate() + 1);
-      }
-      
-      // 目標達成カード更新
-      updateGoalCards(totalMinutes, remainingDays, earlyAvg, lateAvg, restAvg);
-      
-      // 科目別内訳
-      updateSubjectBreakdown(totalMinutes);
-      
-      // トレンドチャート
-      updateTrendChart();
-      
-      // 曜日別・科目別チャート
-      updateWeekdayChart();
-      
-      // インサイト
-      generateInsights(totalMinutes, earlyAvg, lateAvg, restAvg, remainingDays, shiftStats);
-    }
-    
-    function updateGoalCards(totalMinutes, remainingDays, earlyAvg, lateAvg, restAvg) {
-      const goals = [800, 1000, 1200];
-      
-      goals.forEach(goal => {
-        const goalMinutes = goal * 60;
-        const progress = Math.min(100, (totalMinutes / goalMinutes * 100)).toFixed(1);
-        const remainingMinutes = Math.max(0, goalMinutes - totalMinutes);
-        
-        const progressEl = document.getElementById(`goal${goal}Progress`);
-        if (progressEl) progressEl.textContent = progress + '%';
-        
-        // 早番・遅番・休日別の必要ペース（休日2倍）
-        const totalWeightedDays = (remainingDays.early || 0) + (remainingDays.late || 0) + (remainingDays.rest || 0) * 2;
-        const baseRequired = totalWeightedDays > 0 ? remainingMinutes / totalWeightedDays : 0;
-        
-        const earlyRequired = baseRequired;
-        const lateRequired = baseRequired;
-        const restRequired = baseRequired * 2;
-        
-        const earlyPaceEl = document.getElementById(`goal${goal}EarlyPace`);
-        const latePaceEl = document.getElementById(`goal${goal}LatePace`);
-        const restPaceEl = document.getElementById(`goal${goal}RestPace`);
-        
-        if (earlyPaceEl) earlyPaceEl.textContent = minutesToTimeString(earlyRequired);
-        if (latePaceEl) latePaceEl.textContent = minutesToTimeString(lateRequired);
-        if (restPaceEl) restPaceEl.textContent = minutesToTimeString(restRequired);
-        
-        // ステータス判定
-        const statusEl = document.getElementById(`goal${goal}Status`);
-        if (!statusEl) return;
-        
-        let statusHTML = '';
-        
-        if (totalMinutes >= goalMinutes) {
-          const excess = totalMinutes - goalMinutes;
-          statusHTML = `<span class="status-badge status-ahead">✅ 達成済み（${minutesToTimeString(excess)}超過）</span>`;
-        } else {
-          const shortage = goalMinutes - totalMinutes;
-          
-          // 経過日数のシフトパターンを計算
-          const today = new Date();
-          const startDate = new Date('2026-02-06');
-          const daysPassed = Math.max(0, Math.floor((today - startDate) / (1000 * 60 * 60 * 24)));
-          
-          let passedDays = { early: 0, late: 0, rest: 0 };
-          let checkDate = new Date(startDate);
-          
-          for (let i = 0; i < daysPassed; i++) {
-            const shiftType = getShiftType(checkDate);
-            passedDays[shiftType]++;
-            checkDate.setDate(checkDate.getDate() + 1);
-          }
-          
-          // この目標を達成するための必要ペース（早番・遅番・休日）
-          const totalWeightedDays = (remainingDays.early || 0) + (remainingDays.late || 0) + (remainingDays.rest || 0) * 2;
-          const baseRequired = totalWeightedDays > 0 ? remainingMinutes / totalWeightedDays : 0;
-          const thisEarlyRequired = baseRequired;
-          const thisLateRequired = baseRequired;
-          const thisRestRequired = baseRequired * 2;
-          
-          // 現在の平均ペースでこれまで勉強すべきだった時間
-          const shouldHaveStudied = thisEarlyRequired * passedDays.early + 
-                                    thisLateRequired * passedDays.late + 
-                                    thisRestRequired * passedDays.rest;
-          
-          // 実際の学習時間との差
-          const progressDifference = totalMinutes - shouldHaveStudied;
-          
-          let progressHTML = '';
-          if (progressDifference > 0) {
-            progressHTML = `
-              <div style="margin-top: 12px; padding: 12px; background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-radius: 10px; border: 2px solid #10b981;">
-                <div style="font-size: 13px; color: #065f46; font-weight: 700; margin-bottom: 4px;">📈 進捗状況</div>
-                <div style="font-size: 16px; color: #065f46; font-weight: 800;">
-                  必要ペースより <span style="font-size: 20px;">${minutesToTimeString(progressDifference)}</span> 進んでいます！
-                </div>
-                <div style="font-size: 12px; color: #047857; margin-top: 6px;">
-                  このペースなら${goal}時間達成可能です
-                </div>
-              </div>
-            `;
-          } else if (progressDifference < 0) {
-            progressHTML = `
-              <div style="margin-top: 12px; padding: 12px; background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); border-radius: 10px; border: 2px solid #ef4444;">
-                <div style="font-size: 13px; color: #991b1b; font-weight: 700; margin-bottom: 4px;">⚠️ 進捗状況</div>
-                <div style="font-size: 16px; color: #991b1b; font-weight: 800;">
-                  必要ペースより <span style="font-size: 20px;">${minutesToTimeString(Math.abs(progressDifference))}</span> 遅れています
-                </div>
-                <div style="font-size: 12px; color: #7f1d1d; margin-top: 6px;">
-                  ペースアップが必要です
-                </div>
-              </div>
-            `;
-          } else {
-            progressHTML = `
-              <div style="margin-top: 12px; padding: 12px; background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-radius: 10px; border: 2px solid #3b82f6;">
-                <div style="font-size: 13px; color: #1e40af; font-weight: 700; margin-bottom: 4px;">✨ 進捗状況</div>
-                <div style="font-size: 16px; color: #1e40af; font-weight: 800;">
-                  必要ペース通りです！
-                </div>
-                <div style="font-size: 12px; color: #1e3a8a; margin-top: 6px;">
-                  この調子で頑張りましょう
-                </div>
-              </div>
-            `;
-          }
-          
-          statusHTML = `
-            <span class="status-badge status-ontrack">📊 進行中</span>
-            <div style="margin-top: 10px; font-size: 13px; color: #6b7280; font-weight: 600;">
-              残り必要時間: ${minutesToTimeString(shortage)} (${(shortage/60).toFixed(0)}時間)
-            </div>
-            ${progressHTML}
-          `;
-        }
-        
-        statusEl.innerHTML = statusHTML;
-      });
-    }
-    
-    function updateSubjectBreakdown(totalMinutes) {
-      const subjectTotals = {};
-      let subjectSumMinutes = 0;
-      
-      subjects.forEach(subject => {
-        const minutes = studyRecords
-          .filter(r => r.subject === subject)
-          .reduce((sum, r) => sum + r.minutes, 0);
-        subjectTotals[subject] = minutes;
-        if (subjectTargets[subject] > 0) {  // 「その他」を除く
-          subjectSumMinutes += minutes;
-        }
-      });
-      
-      const container = document.getElementById('subjectBreakdown');
-      container.innerHTML = '';
-      
-      subjects.forEach(subject => {
-        const minutes = subjectTotals[subject] || 0;
-        const hours = (minutes / 60).toFixed(1);
-        const targetHours = subjectTargets[subject];
-        
-        // パーセンテージは目標時間に対する達成率
-        const targetProgress = targetHours > 0 ? ((minutes / 60) / targetHours * 100).toFixed(1) : 0;
-        
-        const item = document.createElement('div');
-        item.className = 'subject-item';
-        item.innerHTML = `
-          <div class="subject-name">
-            <span>${subject}</span>
-            ${targetHours > 0 ? `<span class="subject-target">目標${targetHours}h</span>` : ''}
-          </div>
-          <div class="subject-stats">
-            <div class="subject-time">${hours}h</div>
-            ${targetHours > 0 ? `<div class="subject-percentage">${targetProgress}%</div>` : '<div class="subject-percentage">-</div>'}
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width: ${Math.min(100, targetProgress)}%"></div>
-          </div>
-        `;
-        container.appendChild(item);
-      });
-    }
-    
-    function updateTrendChart() {
-      const canvas = document.getElementById('trendChart');
-      const ctx = canvas.getContext('2d');
-      
-      const today = new Date();
-      const labels = [];
-      const data = [];
-      
-      for (let i = 29; i >= 0; i--) {
-        const date = new Date(today);
-        date.setDate(today.getDate() - i);
-        const dateKey = date.toISOString().split('T')[0];
-        
-        labels.push((date.getMonth() + 1) + '/' + date.getDate());
-        
-        const dayMinutes = studyRecords
-          .filter(r => r.date === dateKey)
-          .reduce((sum, r) => sum + r.minutes, 0);
-        
-        data.push((dayMinutes / 60).toFixed(2));
-      }
-      
-      const recent7 = data.slice(-7).reduce((a, b) => parseFloat(a) + parseFloat(b), 0) / 7;
-      const previous7 = data.slice(-14, -7).reduce((a, b) => parseFloat(a) + parseFloat(b), 0) / 7;
-      const change = previous7 > 0 ? ((recent7 - previous7) / previous7 * 100).toFixed(1) : 0;
-      
-      const trendEl = document.getElementById('trendIndicator');
-      if (change > 5) {
-        trendEl.innerHTML = `<span class="trend-indicator trend-up">↗ ${change}% 増加</span>`;
-      } else if (change < -5) {
-        trendEl.innerHTML = `<span class="trend-indicator trend-down">↘ ${Math.abs(change)}% 減少</span>`;
-      } else {
-        trendEl.innerHTML = `<span class="trend-indicator trend-neutral">→ 横ばい</span>`;
-      }
-      
-      if (trendChartInstance) {
-        trendChartInstance.destroy();
-      }
-      
-      trendChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: '学習時間 (時間)',
-            data: data,
-            borderColor: '#667eea',
-            backgroundColor: 'rgba(102, 126, 234, 0.1)',
-            tension: 0.4,
-            fill: true
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false
-            }
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-              ticks: {
-                callback: function(value) {
-                  return value + 'h';
-                }
-              }
-            }
-          }
-        }
-      });
-    }
-    
-    let weekdayChartPeriod = 'all';
-    let currentReportType = 'today';
-    
-    // レポート切り替え
-    function switchReport(type) {
-      currentReportType = type;
-      
-      // ボタンのスタイル更新
-      document.querySelectorAll('#report-tab .filter-btn').forEach(btn => {
-        btn.style.background = '#d1d5db';
-        btn.style.color = '#374151';
-      });
-      
-      const activeBtn = type === 'today' ? 'reportBtnToday' : type === 'week' ? 'reportBtnWeek' : 'reportBtnMonth';
-      const btn = document.getElementById(activeBtn);
-      if (btn) {
-        btn.style.background = 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)';
-        btn.style.color = 'white';
-      }
-      
+
+    // ===== REPORT =====
+    function switchReport(type){
+      currentReportType=type;
+      document.querySelectorAll('#report-tab .filter-btn').forEach(b=>{b.style.background='rgba(255,255,255,0.1)';b.style.color='rgba(255,255,255,0.7)';});
+      const ab=type==='today'?'reportBtnToday':type==='week'?'reportBtnWeek':'reportBtnMonth';
+      const btn=document.getElementById(ab);if(btn){btn.style.background='linear-gradient(135deg,#e94560,#c23152)';btn.style.color='white';}
       updateReport();
     }
-    
-    // レポート更新
-    function updateReport() {
-      const container = document.getElementById('reportContent');
-      if (!container) return;
-      
-      const today = new Date();
-      let startDate, endDate, title, period;
-      
-      if (currentReportType === 'today') {
-        startDate = new Date(today);
-        startDate.setHours(0, 0, 0, 0);
-        endDate = new Date(today);
-        endDate.setHours(23, 59, 59, 999);
-        title = '今日の学習レポート';
-        period = today.toISOString().split('T')[0];
-      } else if (currentReportType === 'week') {
-        startDate = new Date(today);
-        startDate.setDate(today.getDate() - today.getDay());
-        startDate.setHours(0, 0, 0, 0);
-        endDate = new Date(today);
-        endDate.setHours(23, 59, 59, 999);
-        title = '今週の学習レポート';
-        period = `${startDate.toISOString().split('T')[0]} 〜 ${endDate.toISOString().split('T')[0]}`;
-      } else {
-        startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-        endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-        endDate.setHours(23, 59, 59, 999);
-        title = '今月の学習レポート';
-        period = `${today.getFullYear()}年${today.getMonth() + 1}月`;
+    function updateReport(){
+      const c=document.getElementById('reportContent');if(!c)return;
+      const today=new Date();let startDate,endDate,title,period;
+      if(currentReportType==='today'){startDate=new Date(today);startDate.setHours(0,0,0,0);endDate=new Date(today);endDate.setHours(23,59,59,999);title='今日の学習レポート';period=today.toISOString().split('T')[0];}
+      else if(currentReportType==='week'){startDate=new Date(today);startDate.setDate(today.getDate()-today.getDay());startDate.setHours(0,0,0,0);endDate=new Date(today);endDate.setHours(23,59,59,999);title='今週の学習レポート';period=startDate.toISOString().split('T')[0]+' \u301C '+endDate.toISOString().split('T')[0];}
+      else{startDate=new Date(today.getFullYear(),today.getMonth(),1);endDate=new Date(today.getFullYear(),today.getMonth()+1,0);endDate.setHours(23,59,59,999);title='今月の学習レポート';period=today.getFullYear()+'\u5E74'+(today.getMonth()+1)+'\u6708';}
+      const fr=studyRecords.filter(r=>{const rd=new Date(r.date+'T00:00:00');return rd>=startDate&&rd<=endDate;});
+      const tm=fr.reduce((s,r)=>s+r.minutes,0),ud=[...new Set(fr.map(r=>r.date))].length,am=ud>0?tm/ud:0;
+      const st={};subjects.forEach(s=>{st[s]=fr.filter(r=>r.subject===s).reduce((a,r)=>a+r.minutes,0);});
+      const ss=Object.entries(st).filter(([_,m])=>m>0).sort((a,b)=>b[1]-a[1]);
+      const ts=ss.length>0?ss[0]:null;
+      let dd='';
+      if(currentReportType!=='today'){
+        const dm={};let cd=new Date(startDate);while(cd<=endDate){const dk=cd.toISOString().split('T')[0];dm[dk]=fr.filter(r=>r.date===dk).reduce((s,r)=>s+r.minutes,0);cd.setDate(cd.getDate()+1);}
+        const dates=Object.keys(dm).sort(),mx=Math.max(...Object.values(dm),1);
+        dd='<div class="chart-section" style="margin-top:30px;"><div class="chart-title"><span>\u{1F4CA}</span><span>日別学習時間</span></div><div style="display:grid;gap:8px;">';
+        dates.forEach(dt=>{const mn=dm[dt],pct=(mn/mx*100).toFixed(0),dObj=new Date(dt+'T00:00:00'),w=['日','月','火','水','木','金','土'][dObj.getDay()];
+          dd+='<div style="display:flex;align-items:center;gap:12px;"><div style="min-width:100px;font-size:13px;font-weight:600;color:rgba(255,255,255,0.8);">'+dt.substring(5)+' ('+w+')</div><div style="flex:1;background:rgba(255,255,255,0.1);height:32px;border-radius:8px;overflow:hidden;"><div style="width:'+pct+'%;height:100%;background:linear-gradient(90deg,#e94560,#ffd93d);border-radius:8px;display:flex;align-items:center;justify-content:flex-end;padding-right:12px;">'+(mn>0?'<span style="font-size:12px;font-weight:700;color:white;">'+minutesToTimeString(mn)+'</span>':'')+'</div></div></div>';});
+        dd+='</div></div>';
       }
-      
-      // データ集計
-      const filteredRecords = studyRecords.filter(r => {
-        const recordDate = new Date(r.date + 'T00:00:00');
-        return recordDate >= startDate && recordDate <= endDate;
-      });
-      
-      const totalMinutes = filteredRecords.reduce((sum, r) => sum + r.minutes, 0);
-      const uniqueDates = [...new Set(filteredRecords.map(r => r.date))].length;
-      const avgMinutes = uniqueDates > 0 ? totalMinutes / uniqueDates : 0;
-      
-      // 科目別集計
-      const subjectTotals = {};
-      subjects.forEach(subject => {
-        subjectTotals[subject] = filteredRecords
-          .filter(r => r.subject === subject)
-          .reduce((sum, r) => sum + r.minutes, 0);
-      });
-      
-      // 最も勉強した科目
-      const sortedSubjects = Object.entries(subjectTotals)
-        .filter(([_, minutes]) => minutes > 0)
-        .sort((a, b) => b[1] - a[1]);
-      
-      const topSubject = sortedSubjects.length > 0 ? sortedSubjects[0] : null;
-      
-      // 日別データ（週間・月間用）
-      let dailyData = '';
-      if (currentReportType !== 'today') {
-        const dateMap = {};
-        let currentDay = new Date(startDate);
-        
-        while (currentDay <= endDate) {
-          const dateKey = currentDay.toISOString().split('T')[0];
-          const dayMinutes = filteredRecords
-            .filter(r => r.date === dateKey)
-            .reduce((sum, r) => sum + r.minutes, 0);
-          
-          dateMap[dateKey] = dayMinutes;
-          currentDay.setDate(currentDay.getDate() + 1);
+      c.innerHTML='<div style="text-align:center;margin-bottom:30px;"><h2 style="font-size:28px;font-weight:800;color:white;margin-bottom:8px;">'+title+'</h2><p style="font-size:14px;color:rgba(255,255,255,0.6);font-weight:600;">'+period+'</p></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:30px;"><div style="background:linear-gradient(135deg,#e94560,#c23152);color:white;padding:24px;border-radius:16px;"><div style="font-size:13px;opacity:0.9;margin-bottom:8px;font-weight:600;">総学習時間</div><div style="font-size:36px;font-weight:800;font-family:Courier New,monospace;">'+minutesToTimeString(tm)+'</div></div><div style="background:linear-gradient(135deg,#10b981,#059669);color:white;padding:24px;border-radius:16px;"><div style="font-size:13px;opacity:0.9;margin-bottom:8px;font-weight:600;">学習日数</div><div style="font-size:36px;font-weight:800;">'+ud+'日</div></div><div style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white;padding:24px;border-radius:16px;"><div style="font-size:13px;opacity:0.9;margin-bottom:8px;font-weight:600;">1日平均</div><div style="font-size:36px;font-weight:800;font-family:Courier New,monospace;">'+minutesToTimeString(am)+'</div></div>'+(ts?'<div style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:white;padding:24px;border-radius:16px;"><div style="font-size:13px;opacity:0.9;margin-bottom:8px;font-weight:600;">最も勉強した科目</div><div style="font-size:16px;font-weight:800;margin-bottom:4px;">'+ts[0]+'</div><div style="font-size:24px;font-weight:700;font-family:Courier New,monospace;">'+minutesToTimeString(ts[1])+'</div></div>':'')+'</div><div class="chart-section"><div class="chart-title"><span>\u{1F4DA}</span><span>科目別学習時間</span></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;">'+ss.map(([sub,mn])=>{const pct=tm>0?(mn/tm*100).toFixed(1):0,hr=(mn/60).toFixed(1);return'<div style="background:rgba(0,0,0,0.2);border-radius:12px;padding:16px;border-left:5px solid #e94560;"><div style="font-weight:800;color:white;margin-bottom:8px;font-size:14px;">'+sub+'</div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><div style="font-size:24px;font-weight:800;color:#ffd93d;">'+hr+'h</div><div style="font-size:14px;color:rgba(255,255,255,0.6);font-weight:700;">'+pct+'%</div></div><div class="progress-bar"><div style="width:'+pct+'%;height:100%;background:linear-gradient(90deg,#e94560,#ffd93d);border-radius:4px;"></div></div></div>';}).join('')+'</div></div>'+dd+(fr.length===0?'<div style="text-align:center;padding:60px 20px;background:rgba(0,0,0,0.2);border-radius:16px;margin-top:30px;"><div style="font-size:48px;margin-bottom:16px;">\u{1F4DA}</div><div style="font-size:18px;font-weight:700;color:rgba(255,255,255,0.6);margin-bottom:8px;">この期間の学習記録がありません</div></div>':'');
+    }
+
+    // ===== ADVANCED STATS =====
+    function updateAdvancedStats(){
+      const tm=studyRecords.reduce((s,r)=>s+r.minutes,0);
+      document.getElementById('totalAllTime').textContent=minutesToTimeString(tm);
+      const today=new Date(),ws=new Date(today);ws.setDate(today.getDate()-today.getDay());ws.setHours(0,0,0,0);
+      const wm=studyRecords.filter(r=>new Date(r.date)>=ws).reduce((s,r)=>s+r.minutes,0);
+      document.getElementById('weekTime').textContent=minutesToTimeString(wm);
+      const ms=new Date(today.getFullYear(),today.getMonth(),1);
+      const mm=studyRecords.filter(r=>new Date(r.date)>=ms).reduce((s,r)=>s+r.minutes,0);
+      document.getElementById('monthTime').textContent=minutesToTimeString(mm);
+      const ud=[...new Set(studyRecords.map(r=>r.date))];
+      document.getElementById('studyDays').textContent=ud.length;
+      const ss={early:{total:0,count:0},late:{total:0,count:0},rest:{total:0,count:0}};
+      studyRecords.forEach(r=>{const d=new Date(r.date+'T00:00:00'),st=getShiftType(d);ss[st].total+=r.minutes;});
+      ud.forEach(ds=>{const d=new Date(ds+'T00:00:00'),st=getShiftType(d),dm=studyRecords.filter(r=>r.date===ds).reduce((s,r)=>s+r.minutes,0);if(dm>0)ss[st].count++;});
+      const ea=ss.early.count>0?ss.early.total/ss.early.count:0,la=ss.late.count>0?ss.late.total/ss.late.count:0,ra=ss.rest.count>0?ss.rest.total/ss.rest.count:0;
+      document.getElementById('earlyAvg').textContent=minutesToTimeString(ea);
+      document.getElementById('lateAvg').textContent=minutesToTimeString(la);
+      document.getElementById('restAvg').textContent=minutesToTimeString(ra);
+      const examDate=new Date('2026-08-23'),dte=Math.ceil((examDate-today)/864e5);
+      document.getElementById('daysToExam').textContent=dte;
+      const rd={early:0,late:0,rest:0};let cd=new Date(today);cd.setDate(cd.getDate()+1);
+      while(cd<=examDate){const st=getShiftType(cd);rd[st]++;cd.setDate(cd.getDate()+1);}
+      updateGoalCards(tm,rd,ea,la,ra);updateSubjectBreakdown(tm);updateTrendChart();updateWeekdayChart();generateInsights(tm,ea,la,ra,rd,ss);
+    }
+    function updateGoalCards(tm,rd,ea,la,ra){
+      [800,1000,1200].forEach(goal=>{
+        const gm=goal*60,prog=Math.min(100,(tm/gm*100)).toFixed(1),rem=Math.max(0,gm-tm);
+        const pe=document.getElementById('goal'+goal+'Progress');if(pe)pe.textContent=prog+'%';
+        const tw=(rd.early||0)+(rd.late||0)+(rd.rest||0)*2,br=tw>0?rem/tw:0;
+        const er=br,lr=br,rr=br*2;
+        const ep=document.getElementById('goal'+goal+'EarlyPace'),lp=document.getElementById('goal'+goal+'LatePace'),rp=document.getElementById('goal'+goal+'RestPace');
+        if(ep)ep.textContent=minutesToTimeString(er);if(lp)lp.textContent=minutesToTimeString(lr);if(rp)rp.textContent=minutesToTimeString(rr);
+        const se=document.getElementById('goal'+goal+'Status');if(!se)return;
+        if(tm>=gm){const ex=tm-gm;se.innerHTML='<span class="status-badge status-ahead">\u2705 達成済み\uFF08'+minutesToTimeString(ex)+'超過\uFF09</span>';}
+        else{
+          const today=new Date(),startDate=new Date('2026-02-06'),dp=Math.max(0,Math.floor((today-startDate)/864e5));
+          let pd={early:0,late:0,rest:0},ck=new Date(startDate);
+          for(let i=0;i<dp;i++){const st=getShiftType(ck);pd[st]++;ck.setDate(ck.getDate()+1);}
+          const shd=er*pd.early+lr*pd.late+rr*pd.rest,diff=tm-shd;
+          let ph='';
+          if(diff>0)ph='<div style="margin-top:12px;padding:12px;background:rgba(16,185,129,0.15);border-radius:10px;border:1px solid rgba(16,185,129,0.3);"><div style="font-size:13px;color:#6ee7b7;font-weight:700;margin-bottom:4px;">\u{1F4C8} 進捗</div><div style="font-size:16px;color:#6ee7b7;font-weight:800;">ペースより '+minutesToTimeString(diff)+' 進んでいます\uFF01</div></div>';
+          else if(diff<0)ph='<div style="margin-top:12px;padding:12px;background:rgba(239,68,68,0.15);border-radius:10px;border:1px solid rgba(239,68,68,0.3);"><div style="font-size:13px;color:#fca5a5;font-weight:700;margin-bottom:4px;">\u26A0\uFE0F 進捗</div><div style="font-size:16px;color:#fca5a5;font-weight:800;">ペースより '+minutesToTimeString(Math.abs(diff))+' 遅れています</div></div>';
+          else ph='<div style="margin-top:12px;padding:12px;background:rgba(96,165,250,0.15);border-radius:10px;border:1px solid rgba(96,165,250,0.3);"><div style="font-size:16px;color:#93c5fd;font-weight:800;">\u2728 ペース通り\uFF01</div></div>';
+          se.innerHTML='<span class="status-badge status-ontrack">\u{1F4CA} 進行中</span><div style="margin-top:10px;font-size:13px;color:rgba(255,255,255,0.6);font-weight:600;">残り: '+minutesToTimeString(rem)+' ('+(rem/60).toFixed(0)+'時間)</div>'+ph;
         }
-        
-        const dates = Object.keys(dateMap).sort();
-        const maxMinutes = Math.max(...Object.values(dateMap), 1);
-        
-        dailyData = `
-          <div class="chart-section" style="margin-top: 30px;">
-            <div class="chart-title">
-              <span>📊</span>
-              <span>日別学習時間</span>
-            </div>
-            <div style="display: grid; gap: 8px;">
-              ${dates.map(date => {
-                const minutes = dateMap[date];
-                const percentage = (minutes / maxMinutes * 100).toFixed(0);
-                const dateObj = new Date(date + 'T00:00:00');
-                const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
-                const weekday = weekdays[dateObj.getDay()];
-                
-                return `
-                  <div style="display: flex; align-items: center; gap: 12px;">
-                    <div style="min-width: 100px; font-size: 13px; font-weight: 600; color: #374151;">
-                      ${date.substring(5)} (${weekday})
-                    </div>
-                    <div style="flex: 1; background: #e5e7eb; height: 32px; border-radius: 8px; overflow: hidden; position: relative;">
-                      <div style="width: ${percentage}%; height: 100%; background: linear-gradient(90deg, #6366f1, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: flex-end; padding-right: 12px;">
-                        ${minutes > 0 ? `<span style="font-size: 12px; font-weight: 700; color: white;">${minutesToTimeString(minutes)}</span>` : ''}
-                      </div>
-                    </div>
-                  </div>
-                `;
-              }).join('')}
-            </div>
-          </div>
-        `;
-      }
-      
-      container.innerHTML = `
-        <div style="text-align: center; margin-bottom: 30px;">
-          <h2 style="font-size: 28px; font-weight: 800; color: #1f2937; margin-bottom: 8px;">${title}</h2>
-          <p style="font-size: 14px; color: #6b7280; font-weight: 600;">${period}</p>
-        </div>
-        
-        <!-- サマリーカード -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 30px;">
-          <div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; padding: 24px; border-radius: 16px; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);">
-            <div style="font-size: 13px; opacity: 0.9; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">総学習時間</div>
-            <div style="font-size: 36px; font-weight: 800; font-family: 'Courier New', monospace;">${minutesToTimeString(totalMinutes)}</div>
-          </div>
-          
-          <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 24px; border-radius: 16px; box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);">
-            <div style="font-size: 13px; opacity: 0.9; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">学習日数</div>
-            <div style="font-size: 36px; font-weight: 800;">${uniqueDates}日</div>
-          </div>
-          
-          <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 24px; border-radius: 16px; box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);">
-            <div style="font-size: 13px; opacity: 0.9; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">1日平均</div>
-            <div style="font-size: 36px; font-weight: 800; font-family: 'Courier New', monospace;">${minutesToTimeString(avgMinutes)}</div>
-          </div>
-          
-          ${topSubject ? `
-          <div style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); color: white; padding: 24px; border-radius: 16px; box-shadow: 0 8px 24px rgba(236, 72, 153, 0.3);">
-            <div style="font-size: 13px; opacity: 0.9; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">最も勉強した科目</div>
-            <div style="font-size: 18px; font-weight: 800; margin-bottom: 4px;">${topSubject[0]}</div>
-            <div style="font-size: 24px; font-weight: 700; font-family: 'Courier New', monospace;">${minutesToTimeString(topSubject[1])}</div>
-          </div>
-          ` : ''}
-        </div>
-        
-        <!-- 科目別内訳 -->
-        <div class="chart-section">
-          <div class="chart-title">
-            <span>📚</span>
-            <span>科目別学習時間</span>
-          </div>
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px;">
-            ${sortedSubjects.map(([subject, minutes]) => {
-              const percentage = totalMinutes > 0 ? (minutes / totalMinutes * 100).toFixed(1) : 0;
-              const hours = (minutes / 60).toFixed(1);
-              
-              return `
-                <div style="background: white; border-radius: 12px; padding: 16px; border-left: 5px solid #6366f1; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
-                  <div style="font-weight: 800; color: #1f2937; margin-bottom: 8px; font-size: 14px;">${subject}</div>
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <div style="font-size: 24px; font-weight: 800; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">${hours}h</div>
-                    <div style="font-size: 14px; color: #6b7280; font-weight: 700;">${percentage}%</div>
-                  </div>
-                  <div class="progress-bar" style="background: #e5e7eb; height: 8px; border-radius: 4px; overflow: hidden;">
-                    <div style="width: ${percentage}%; height: 100%; background: linear-gradient(90deg, #6366f1, #8b5cf6); border-radius: 4px;"></div>
-                  </div>
-                </div>
-              `;
-            }).join('')}
-          </div>
-        </div>
-        
-        ${dailyData}
-        
-        ${filteredRecords.length === 0 ? `
-          <div style="text-align: center; padding: 60px 20px; background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%); border-radius: 16px; margin-top: 30px;">
-            <div style="font-size: 48px; margin-bottom: 16px;">📚</div>
-            <div style="font-size: 18px; font-weight: 700; color: #6b7280; margin-bottom: 8px;">この期間の学習記録がありません</div>
-            <div style="font-size: 14px; color: #9ca3af;">タイマーで学習を記録しましょう！</div>
-          </div>
-        ` : ''}
-        
-        <div style="margin-top: 30px; text-align: center;">
-          <button onclick="exportReportAsImage()" style="padding: 14px 28px; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3); transition: all 0.3s;">
-            📸 レポートを画像として保存
-          </button>
-        </div>
-      `;
-    }
-    
-    // レポート画像エクスポート（簡易版）
-    function exportReportAsImage() {
-      alert('📸 レポートのスクリーンショットを撮影してください！\n\nWindows: Win + Shift + S\nmacOS: Cmd + Shift + 4\n\n※ 本格的な画像エクスポート機能は次のバージョンで実装予定です');
-    }
-    
-    function updateWeekdayChartPeriod(period) {
-      weekdayChartPeriod = period;
-      
-      // ボタンのスタイル更新
-      document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.style.background = '#d1d5db';
-        btn.style.color = '#374151';
       });
-      
-      const activeBtn = period === 'week' ? 'weekdayBtn1Week' : period === 'month' ? 'weekdayBtn1Month' : 'weekdayBtnAll';
-      const btn = document.getElementById(activeBtn);
-      if (btn) {
-        btn.style.background = '#6366f1';
-        btn.style.color = 'white';
-      }
-      
+    }
+    function updateSubjectBreakdown(tm){
+      const c=document.getElementById('subjectBreakdown');c.innerHTML='';
+      subjects.forEach(s=>{
+        const mn=studyRecords.filter(r=>r.subject===s).reduce((a,r)=>a+r.minutes,0),hr=(mn/60).toFixed(1),th=subjectTargets[s],tp=th>0?((mn/60)/th*100).toFixed(1):0;
+        const item=document.createElement('div');item.className='subject-item';
+        item.innerHTML='<div class="subject-name"><span>'+s+'</span>'+(th>0?'<span class="subject-target">目標'+th+'h</span>':'')+'</div><div class="subject-stats"><div class="subject-time">'+hr+'h</div>'+(th>0?'<div class="subject-percentage">'+tp+'%</div>':'<div class="subject-percentage">-</div>')+'</div><div class="progress-bar"><div class="progress-fill" style="width:'+Math.min(100,tp)+'%"></div></div>';
+        c.appendChild(item);
+      });
+    }
+    function updateTrendChart(){
+      const canvas=document.getElementById('trendChart'),ctx=canvas.getContext('2d'),today=new Date(),labels=[],data=[];
+      for(let i=29;i>=0;i--){const d=new Date(today);d.setDate(today.getDate()-i);const dk=d.toISOString().split('T')[0];labels.push((d.getMonth()+1)+'/'+d.getDate());data.push((studyRecords.filter(r=>r.date===dk).reduce((s,r)=>s+r.minutes,0)/60).toFixed(2));}
+      const r7=data.slice(-7).reduce((a,b)=>parseFloat(a)+parseFloat(b),0)/7,p7=data.slice(-14,-7).reduce((a,b)=>parseFloat(a)+parseFloat(b),0)/7,ch=p7>0?((r7-p7)/p7*100).toFixed(1):0;
+      const te=document.getElementById('trendIndicator');
+      if(ch>5)te.innerHTML='<span class="trend-indicator trend-up">\u2197 '+ch+'% 増加</span>';
+      else if(ch<-5)te.innerHTML='<span class="trend-indicator trend-down">\u2198 '+Math.abs(ch)+'% 減少</span>';
+      else te.innerHTML='<span class="trend-indicator trend-neutral">\u2192 横ばい</span>';
+      if(trendChartInstance)trendChartInstance.destroy();
+      trendChartInstance=new Chart(ctx,{type:'line',data:{labels:labels,datasets:[{label:'学習時間(h)',data:data,borderColor:'#e94560',backgroundColor:'rgba(233,69,96,0.1)',tension:0.4,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{callback:v=>v+'h',color:'rgba(255,255,255,0.5)'},grid:{color:'rgba(255,255,255,0.05)'}},x:{ticks:{color:'rgba(255,255,255,0.5)'},grid:{color:'rgba(255,255,255,0.05)'}}}}});
+    }
+    function updateWeekdayChartPeriod(p){
+      weekdayChartPeriod=p;
+      ['weekdayBtn1Week','weekdayBtn1Month','weekdayBtnAll'].forEach(id=>{const b=document.getElementById(id);if(b){b.style.background='rgba(255,255,255,0.1)';b.style.color='rgba(255,255,255,0.7)';}});
+      const ab=p==='week'?'weekdayBtn1Week':p==='month'?'weekdayBtn1Month':'weekdayBtnAll';
+      const btn=document.getElementById(ab);if(btn){btn.style.background='#e94560';btn.style.color='white';}
       updateWeekdayChart();
     }
-    
-    function updateWeekdayChart() {
-      const canvas = document.getElementById('weekdayChart');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      
-      const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
-      
-      // 期間に応じてフィルター
-      const today = new Date();
-      let filteredRecords = studyRecords;
-      
-      if (weekdayChartPeriod === 'week') {
-        const weekAgo = new Date(today);
-        weekAgo.setDate(today.getDate() - 7);
-        filteredRecords = studyRecords.filter(r => new Date(r.date) >= weekAgo);
-      } else if (weekdayChartPeriod === 'month') {
-        const monthAgo = new Date(today);
-        monthAgo.setMonth(today.getMonth() - 1);
-        filteredRecords = studyRecords.filter(r => new Date(r.date) >= monthAgo);
-      }
-      
-      // 科目別・曜日別のデータを集計
-      const datasets = [];
-      
-      subjects.forEach((subject, idx) => {
-        const weekdayTotals = [0, 0, 0, 0, 0, 0, 0];
-        const weekdayCounts = [0, 0, 0, 0, 0, 0, 0];
-        
-        filteredRecords.filter(r => r.subject === subject).forEach(record => {
-          const date = new Date(record.date);
-          const day = date.getDay();
-          weekdayTotals[day] += record.minutes;
-          if (record.minutes > 0) weekdayCounts[day]++;
-        });
-        
-        const averages = weekdayTotals.map((total, idx) => 
-          weekdayCounts[idx] > 0 ? (total / weekdayCounts[idx] / 60).toFixed(2) : 0
-        );
-        
-        // データがある科目のみ追加
-        const hasData = averages.some(v => v > 0);
-        if (hasData) {
-          datasets.push({
-            label: subject,
-            data: averages,
-            backgroundColor: subjectColors[idx],
-            borderColor: subjectColors[idx],
-            borderWidth: 1
-          });
-        }
-      });
-      
-      if (weekdayChartInstance) {
-        weekdayChartInstance.destroy();
-      }
-      
-      weekdayChartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: weekdays,
-          datasets: datasets
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: true,
-              position: 'bottom'
-            },
-            title: {
-              display: true,
-              text: weekdayChartPeriod === 'week' ? '直近1週間' : weekdayChartPeriod === 'month' ? '直近1ヶ月' : '全期間'
-            }
-          },
-          scales: {
-            x: {
-              stacked: true
-            },
-            y: {
-              stacked: true,
-              beginAtZero: true,
-              ticks: {
-                callback: function(value) {
-                  return value + 'h';
-                }
-              }
-            }
-          }
-        }
-      });
+    function updateWeekdayChart(){
+      const canvas=document.getElementById('weekdayChart');if(!canvas)return;const ctx=canvas.getContext('2d'),wds=['日','月','火','水','木','金','土'];
+      const today=new Date();let fr=studyRecords;
+      if(weekdayChartPeriod==='week'){const wa=new Date(today);wa.setDate(today.getDate()-7);fr=studyRecords.filter(r=>new Date(r.date)>=wa);}
+      else if(weekdayChartPeriod==='month'){const ma=new Date(today);ma.setMonth(today.getMonth()-1);fr=studyRecords.filter(r=>new Date(r.date)>=ma);}
+      const datasets=[];
+      subjects.forEach((s,idx)=>{const wt=[0,0,0,0,0,0,0],wc=[0,0,0,0,0,0,0];
+        fr.filter(r=>r.subject===s).forEach(r=>{const d=new Date(r.date).getDay();wt[d]+=r.minutes;if(r.minutes>0)wc[d]++;});
+        const avg=wt.map((t,i)=>wc[i]>0?(t/wc[i]/60).toFixed(2):0);
+        if(avg.some(v=>v>0))datasets.push({label:s,data:avg,backgroundColor:subjectColors[idx],borderColor:subjectColors[idx],borderWidth:1});});
+      if(weekdayChartInstance)weekdayChartInstance.destroy();
+      weekdayChartInstance=new Chart(ctx,{type:'bar',data:{labels:wds,datasets:datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{color:'rgba(255,255,255,0.7)'}},title:{display:true,text:weekdayChartPeriod==='week'?'直近1週間':weekdayChartPeriod==='month'?'直近1ヶ月':'全期間',color:'white'}},scales:{x:{stacked:true,ticks:{color:'rgba(255,255,255,0.5)'},grid:{color:'rgba(255,255,255,0.05)'}},y:{stacked:true,beginAtZero:true,ticks:{callback:v=>v+'h',color:'rgba(255,255,255,0.5)'},grid:{color:'rgba(255,255,255,0.05)'}}}}});
     }
-    
-    function generateInsights(totalMinutes, earlyAvg, lateAvg, restAvg, remainingDays, shiftStats) {
-      const container = document.getElementById('insights');
-      container.innerHTML = '';
-      
-      const insights = [];
-      
-      // 目標達成可能性（1000時間基準）
-      const goalMinutes = 1000 * 60;
-      const remainingMinutes = goalMinutes - totalMinutes;
-      const totalWeightedDays = remainingDays.early + remainingDays.late + remainingDays.rest * 2;
-      const baseRequired = totalWeightedDays > 0 ? remainingMinutes / totalWeightedDays : 0;
-      
-      if (remainingMinutes > 0) {
-        const earlyRequired = baseRequired;
-        const lateRequired = baseRequired;
-        const restRequired = baseRequired * 2;
-        
-        const earlyOk = earlyRequired <= earlyAvg * 1.1;
-        const lateOk = lateRequired <= lateAvg * 1.1;
-        const restOk = restRequired <= restAvg * 1.1;
-        
-        if (earlyOk && lateOk && restOk) {
-          insights.push({
-            icon: '🎯',
-            title: '1000時間目標達成は十分可能です！',
-            text: `現在のペースを維持すれば、目標達成が可能です。早番${minutesToTimeString(earlyRequired)}、遅番${minutesToTimeString(lateRequired)}、休日${minutesToTimeString(restRequired)}の学習を継続しましょう。`
-          });
-        } else {
-          const shortages = [];
-          if (!earlyOk) shortages.push(`早番は+${Math.round(earlyRequired - earlyAvg)}分`);
-          if (!lateOk) shortages.push(`遅番は+${Math.round(lateRequired - lateAvg)}分`);
-          if (!restOk) shortages.push(`休日は+${Math.round(restRequired - restAvg)}分`);
-          
-          insights.push({
-            icon: '⚠️',
-            title: 'ペースアップが必要です',
-            text: `目標達成には${shortages.join('、')}の増加が必要です。特に時間を確保しやすい休日を活用しましょう。`
-          });
-        }
-      } else {
-        insights.push({
-          icon: '🎉',
-          title: '1000時間目標達成おめでとうございます！',
-          text: `素晴らしい努力です！このペースを維持して、さらに上の目標や復習に時間を使いましょう。試験本番まで気を抜かずに頑張ってください。`
-        });
+
+    // ===== INSIGHTS =====
+    function generateInsights(tm,ea,la,ra,rd,ss){
+      const c=document.getElementById('insights');c.innerHTML='';const ins=[];
+      const gm=1000*60,rem=gm-tm,tw=rd.early+rd.late+rd.rest*2,br=tw>0?rem/tw:0;
+      if(rem>0){const er=br,lr=br,rr=br*2,eOk=er<=ea*1.1,lOk=lr<=la*1.1,rOk=rr<=ra*1.1;
+        if(eOk&&lOk&&rOk)ins.push({icon:'\u{1F3AF}',title:'1000時間目標達成は十分可能です！',text:'現在のペースを維持すれば目標達成が可能です。'});
+        else{const sh=[];if(!eOk)sh.push('早番+'+Math.round(er-ea)+'分');if(!lOk)sh.push('遅番+'+Math.round(lr-la)+'分');if(!rOk)sh.push('休日+'+Math.round(rr-ra)+'分');
+          ins.push({icon:'\u26A0\uFE0F',title:'ペースアップが必要です',text:sh.join('、')+'の増加が必要です。休日を活用しましょう。'});}
+      }else ins.push({icon:'\u{1F389}',title:'1000時間目標達成おめでとう！',text:'素晴らしい努力です！さらに上を目指しましょう。'});
+      if(ss.rest.count>0&&ss.early.count>0){const ratio=ra/ea;
+        if(ratio<1.3)ins.push({icon:'\u{1F4C5}',title:'休日の学習時間を増やしましょう',text:'休日は早番の'+ratio.toFixed(1)+'倍です。2倍を目標にすると効率的です。'});
+        else if(ratio>3)ins.push({icon:'\u26A1',title:'平日の学習習慣を強化しましょう',text:'休日はしっかり勉強できています。平日も通勤時間等を活用しましょう。'});}
+      const stot={};subjects.forEach(s=>{if(subjectTargets[s]>0){const mn=studyRecords.filter(r=>r.subject===s).reduce((a,r)=>a+r.minutes,0);stot[s]={minutes:mn,progress:(mn/60)/subjectTargets[s]};}});
+      const sp=Object.entries(stot).sort((a,b)=>a[1].progress-b[1].progress);
+      if(sp.length>0){const wk=sp[0],st=sp[sp.length-1];
+        if(wk[1].progress<0.3&&st[1].progress>0.6)ins.push({icon:'\u{1F4D6}',title:wk[0]+'に重点を置きましょう',text:'進捗が'+(wk[1].progress*100).toFixed(0)+'%と遅れています。バランスを取りましょう。'});}
+      const today=new Date(),l7=[];for(let i=0;i<7;i++){const d=new Date(today);d.setDate(today.getDate()-i);l7.push(d.toISOString().split('T')[0]);}
+      const sd7=l7.filter(d=>studyRecords.some(r=>r.date===d)).length;
+      if(sd7>=6)ins.push({icon:'\u{1F525}',title:'素晴らしい学習習慣！',text:'この1週間で'+sd7+'日学習。継続は力なり！'});
+      else if(sd7>=4)ins.push({icon:'\u{1F4AA}',title:'良いペースです！',text:'この1週間で'+sd7+'日学習。週5日以上を目標に！'});
+      const examDate=new Date('2026-08-23'),dte=Math.ceil((examDate-today)/864e5);
+      if(dte<=30)ins.push({icon:'\u23F0',title:'試験直前期です',text:'残り'+dte+'日。復習と過去問演習に集中しましょう。'});
+      else if(dte<=60)ins.push({icon:'\u{1F4DD}',title:'仕上げの時期です',text:'残り'+dte+'日。過去問演習を増やしていきましょう。'});
+      ins.forEach(i=>{const el=document.createElement('div');el.className='insight-item';
+        el.innerHTML='<div class="insight-icon">'+i.icon+'</div><div class="insight-content"><h3>'+i.title+'</h3><p>'+i.text+'</p></div>';c.appendChild(el);});
+    }
+
+    // ===== GAME ENGINE =====
+    function calcLevel(){
+      const totalXP=studyRecords.reduce((s,r)=>s+r.minutes*10,0);
+      let lv=1,xpForNext=100;
+      while(totalXP>=xpForNext&&lv<99){lv++;xpForNext+=Math.floor(100*Math.pow(1.15,lv-1));}
+      return lv;
+    }
+    function calcXPInfo(){
+      const totalXP=studyRecords.reduce((s,r)=>s+r.minutes*10,0);
+      let lv=1,xpUsed=0,xpForNext=100;
+      while(totalXP>=xpUsed+xpForNext&&lv<99){xpUsed+=xpForNext;lv++;xpForNext=Math.floor(100*Math.pow(1.15,lv-1));}
+      const currentXP=totalXP-xpUsed;
+      return{level:lv,currentXP:currentXP,nextXP:xpForNext,totalXP:totalXP};
+    }
+    function getTitle(lv){for(const t of titleMap)if(lv>=t.min&&lv<=t.max)return t.t;return'社労士マスター';}
+    function getWeapon(lv){let w=weapons[0];for(const wp of weapons)if(lv>=wp.lv)w=wp;return w;}
+    function getCombo(){
+      const dates=[...new Set(studyRecords.map(r=>r.date))].sort().reverse();
+      if(dates.length===0)return 0;
+      const today=new Date().toISOString().split('T')[0];
+      const yesterday=new Date(Date.now()-864e5).toISOString().split('T')[0];
+      if(dates[0]!==today&&dates[0]!==yesterday)return 0;
+      let combo=1,prev=new Date(dates[0]);
+      for(let i=1;i<dates.length;i++){
+        const cur=new Date(dates[i]),diff=Math.round((prev-cur)/864e5);
+        if(diff===1){combo++;prev=cur;}else break;
       }
-      
-      // シフトバランスのアドバイス
-      if (shiftStats.rest.count > 0 && shiftStats.early.count > 0) {
-        const restToEarlyRatio = restAvg / earlyAvg;
-        if (restToEarlyRatio < 1.3) {
-          insights.push({
-            icon: '📅',
-            title: '休日の学習時間を増やしましょう',
-            text: `休日は勤務日より時間を確保しやすいはずです。現在、休日の平均${minutesToTimeString(restAvg)}は早番${minutesToTimeString(earlyAvg)}の${restToEarlyRatio.toFixed(1)}倍です。休日は早番の2倍程度（${minutesToTimeString(earlyAvg * 2)}）を目標にすると効率的です。`
-          });
-        } else if (restToEarlyRatio > 3) {
-          insights.push({
-            icon: '⚡',
-            title: '平日の学習習慣を強化しましょう',
-            text: `休日にしっかり勉強できていますね！平日も少しずつ時間を増やすと、さらに安定したペースになります。通勤時間や昼休みなどのスキマ時間も活用してみましょう。`
-          });
-        }
-      }
-      
-      // 科目バランスのアドバイス
-      const subjectTotals = {};
-      subjects.forEach(subject => {
-        if (subjectTargets[subject] > 0) {
-          const minutes = studyRecords
-            .filter(r => r.subject === subject)
-            .reduce((sum, r) => sum + r.minutes, 0);
-          subjectTotals[subject] = {
-            minutes: minutes,
-            progress: (minutes / 60) / subjectTargets[subject]
-          };
-        }
+      return combo;
+    }
+    function getComboMultiplier(c){if(c>=30)return 3.0;if(c>=14)return 2.5;if(c>=7)return 2.0;if(c>=5)return 1.5;if(c>=3)return 1.2;if(c>=2)return 1.1;return 1.0;}
+
+    function updateGameUI(){
+      const info=calcXPInfo(),combo=getCombo(),mult=getComboMultiplier(combo),weapon=getWeapon(info.level),totalMin=studyRecords.reduce((s,r)=>s+r.minutes,0);
+      document.getElementById('heroTitle').textContent=getTitle(info.level);
+      document.getElementById('heroLevel').textContent=info.level;
+      document.getElementById('xpBar').style.width=(info.currentXP/info.nextXP*100)+'%';
+      document.getElementById('xpText').textContent=info.currentXP+' / '+info.nextXP+' XP';
+      document.getElementById('heroTotalTime').textContent=minutesToTimeString(totalMin);
+      document.getElementById('comboCount').textContent=combo+'\u65E5';
+      document.getElementById('comboMultiplier').textContent='x'+mult.toFixed(1)+' XP';
+      document.getElementById('weaponIcon').textContent=weapon.icon;
+      document.getElementById('weaponName').textContent=weapon.name;
+      document.getElementById('weaponStat').textContent=weapon.stat;
+      // Boss cards
+      const bg=document.getElementById('bossGrid');bg.innerHTML='';
+      let defeated=0;
+      bosses.forEach(b=>{
+        const dmg=studyRecords.filter(r=>r.subject===b.subject).reduce((s,r)=>s+r.minutes,0);
+        const hpLeft=Math.max(0,b.hp-dmg),pct=(hpLeft/b.hp*100).toFixed(1),isDead=hpLeft<=0;
+        if(isDead)defeated++;
+        const card=document.createElement('div');card.className='boss-card'+(isDead?' defeated':'');
+        card.innerHTML='<div style="font-size:32px;margin-bottom:8px;">'+b.icon+'</div><div class="boss-name">'+b.name+'</div><div class="boss-subject">'+b.subject+'</div><div class="boss-hp-bar"><div class="boss-hp-fill'+(pct<30?' low':'')+'" style="width:'+pct+'%"></div></div><div class="boss-hp-text">'+(isDead?'\u2620\uFE0F DEFEATED':'HP: '+minutesToTimeString(hpLeft)+' / '+minutesToTimeString(b.hp))+'</div><div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;">\u{1F5E1}\uFE0F ダメージ: '+minutesToTimeString(dmg)+'</div>';
+        bg.appendChild(card);
       });
-      
-      const sortedByProgress = Object.entries(subjectTotals)
-        .sort((a, b) => a[1].progress - b[1].progress);
-      
-      if (sortedByProgress.length > 0) {
-        const weakest = sortedByProgress[0];
-        const strongest = sortedByProgress[sortedByProgress.length - 1];
-        
-        if (weakest[1].progress < 0.3 && strongest[1].progress > 0.6) {
-          const weakProgress = (weakest[1].progress * 100).toFixed(0);
-          const remaining = (subjectTargets[weakest[0]] - weakest[1].minutes / 60).toFixed(0);
-          
-          insights.push({
-            icon: '📖',
-            title: `${weakest[0]}に重点を置きましょう`,
-            text: `${weakest[0]}の進捗が${weakProgress}%と遅れています。目標まで残り約${remaining}時間です。得意科目とのバランスを取りながら、苦手科目を優先的に学習することをおすすめします。`
-          });
-        } else if (Object.values(subjectTotals).every(s => s.progress > 0.2 && s.progress < 0.8)) {
-          insights.push({
-            icon: '👏',
-            title: '科目バランスが素晴らしいです',
-            text: `全科目をバランスよく学習できています。この調子で各科目を着実に進めていきましょう。どの科目も満遍なく力をつけることが合格への近道です。`
-          });
-        }
-      }
-      
-      // 学習習慣のアドバイス
-      const today = new Date();
-      const last7Days = [];
-      for (let i = 0; i < 7; i++) {
-        const date = new Date(today);
-        date.setDate(today.getDate() - i);
-        last7Days.push(date.toISOString().split('T')[0]);
-      }
-      
-      const studiedDays = last7Days.filter(date => 
-        studyRecords.some(r => r.date === date)
-      ).length;
-      
-      const last30Days = [];
-      for (let i = 0; i < 30; i++) {
-        const date = new Date(today);
-        date.setDate(today.getDate() - i);
-        last30Days.push(date.toISOString().split('T')[0]);
-      }
-      
-      const studiedDays30 = last30Days.filter(date => 
-        studyRecords.some(r => r.date === date)
-      ).length;
-      
-      if (studiedDays >= 6) {
-        insights.push({
-          icon: '🔥',
-          title: '素晴らしい学習習慣です！',
-          text: `この1週間で${studiedDays}日学習しました。ほぼ毎日勉強する習慣が身についていますね。継続は力なり。この調子で合格まで走り抜けましょう！`
-        });
-      } else if (studiedDays >= 4) {
-        insights.push({
-          icon: '💪',
-          title: '良いペースです！',
-          text: `この1週間で${studiedDays}日学習しました。週5日以上を目標に、さらに習慣化を進めましょう。休日だけでなく、平日も少しずつ学習する習慣をつけると効果的です。`
-        });
-      } else if (studiedDays > 0) {
-        insights.push({
-          icon: '📚',
-          title: '学習習慣を強化しましょう',
-          text: `この1週間の学習日数は${studiedDays}日です。理想は週5日以上です。毎日少しずつでも良いので、コンスタントに学習する習慣をつけましょう。15分でも続けることが大切です。`
-        });
-      }
-      
-      // 継続性のアドバイス
-      if (studiedDays30 > 0) {
-        const continuityRate = (studiedDays30 / 30 * 100).toFixed(0);
-        if (continuityRate > 80) {
-          insights.push({
-            icon: '🌟',
-            title: '驚異的な継続力です！',
-            text: `この30日間で${studiedDays30}日学習（継続率${continuityRate}%）。この継続力があれば合格は間違いありません。体調管理にも気をつけて、最後まで走り抜けましょう！`
-          });
-        }
-      }
-      
-      // 試験までの残り時間に応じたアドバイス
-      const examDate = new Date('2026-08-23');
-      const daysToExam = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
-      
-      if (daysToExam <= 30) {
-        insights.push({
-          icon: '⏰',
-          title: '試験直前期に入りました',
-          text: `試験まで残り${daysToExam}日です。新しい論点よりも、これまで学習した内容の復習と定着に重点を置きましょう。過去問を繰り返し解いて、本番の感覚を養うことが重要です。`
-        });
-      } else if (daysToExam <= 60) {
-        insights.push({
-          icon: '📝',
-          title: '仕上げの時期です',
-          text: `試験まで残り${daysToExam}日です。基礎知識の定着を確認しながら、過去問演習を増やしていきましょう。苦手分野の克服と得意分野の確実な得点が鍵です。`
-        });
-      }
-      
-      insights.forEach(insight => {
-        const item = document.createElement('div');
-        item.className = 'insight-item';
-        item.innerHTML = `
-          <div class="insight-icon">${insight.icon}</div>
-          <div class="insight-content">
-            <h3>${insight.title}</h3>
-            <p>${insight.text}</p>
-          </div>
-        `;
-        container.appendChild(item);
+      document.getElementById('heroDefeated').textContent=defeated+'/10';
+      // Badges
+      const bdg=document.getElementById('badgeGrid');bdg.innerHTML='';
+      badges.forEach(b=>{const earned=b.check(studyRecords,combo);
+        const el=document.createElement('div');el.className='badge-item'+(earned?' earned':'');
+        el.innerHTML='<div class="badge-icon">'+b.icon+'</div><div class="badge-name">'+b.name+'</div><div class="badge-desc">'+b.desc+'</div>';
+        bdg.appendChild(el);
       });
     }
-    
-    // エクスポート
-    function exportSheet() {
-      let csv = '日付,曜日,残り日数,' + subjects.join(',') + ',当日合計\n';
-      
-      const startDate = new Date('2026-02-04');
-      const examDate = new Date('2026-08-23');
-      const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
-      
-      let currentDate = new Date(startDate);
-      while (currentDate <= examDate) {
-        const dateKey = currentDate.toISOString().split('T')[0];
-        const weekday = weekdays[currentDate.getDay()];
-        const remaining = Math.floor((examDate - currentDate) / (1000 * 60 * 60 * 24));
-        
-        let row = `${dateKey},${weekday},${remaining}`;
-        let dailyTotal = 0;
-        
-        subjects.forEach(subject => {
-          const minutes = sheetData[dateKey]?.[subject] || 0;
-          row += `,${minutesToTimeString(minutes)}`;
-          dailyTotal += minutes;
-        });
-        
-        row += `,${minutesToTimeString(dailyTotal)}\n`;
-        csv += row;
-        
-        currentDate.setDate(currentDate.getDate() + 1);
+
+    // ===== PARTICLE EFFECTS =====
+    const particles=[];
+    function spawnParticles(x,y,count){
+      for(let i=0;i<count;i++){
+        particles.push({x:x,y:y,vx:(Math.random()-0.5)*12,vy:(Math.random()-0.5)*12-4,life:1,color:['#e94560','#ffd93d','#ff6b6b','#10b981'][Math.floor(Math.random()*4)],size:Math.random()*6+2});
       }
-      
-      downloadCSV(csv, '社労士試験_学習記録_横型.csv');
     }
-    
-    function exportOriginalFormat() {
-      let csv = '日付,曜日,残り日数,科目,勉強時間\n';
-      
-      const startDate = new Date('2026-02-04');
-      const examDate = new Date('2026-08-23');
-      const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
-      
-      let currentDate = new Date(startDate);
-      while (currentDate <= examDate) {
-        const dateKey = currentDate.toISOString().split('T')[0];
-        const weekday = weekdays[currentDate.getDay()];
-        const remaining = Math.floor((examDate - currentDate) / (1000 * 60 * 60 * 24));
-        
-        const dayData = sheetData[dateKey] || {};
-        const hasData = Object.values(dayData).some(v => v > 0);
-        
-        if (hasData) {
-          subjects.forEach(subject => {
-            const minutes = dayData[subject] || 0;
-            if (minutes > 0) {
-              csv += `${dateKey},${weekday},${remaining},${subject},${minutesToTimeString(minutes)}\n`;
-            }
-          });
-        } else {
-          csv += `${dateKey},${weekday},${remaining},,\n`;
-        }
-        
-        currentDate.setDate(currentDate.getDate() + 1);
+    function animateParticles(){
+      const canvas=document.getElementById('particleCanvas'),ctx=canvas.getContext('2d');
+      canvas.width=window.innerWidth;canvas.height=window.innerHeight;ctx.clearRect(0,0,canvas.width,canvas.height);
+      for(let i=particles.length-1;i>=0;i--){
+        const p=particles[i];p.x+=p.vx;p.y+=p.vy;p.vy+=0.15;p.life-=0.02;
+        if(p.life<=0){particles.splice(i,1);continue;}
+        ctx.globalAlpha=p.life;ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.size*p.life,0,Math.PI*2);ctx.fill();
       }
-      
-      downloadCSV(csv, '社労士試験_学習記録_縦型.csv');
+      requestAnimationFrame(animateParticles);
     }
-    
-    function downloadCSV(csv, filename) {
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      const url = URL.createObjectURL(blob);
-      
-      link.setAttribute('href', url);
-      link.setAttribute('download', filename);
-      link.style.visibility = 'hidden';
-      
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    animateParticles();
+
+    function showLevelUp(lv){
+      const overlay=document.getElementById('levelUpOverlay');
+      document.getElementById('levelUpText').textContent='LEVEL UP!';
+      document.getElementById('levelUpSub').textContent='Lv.'+lv+' - '+getTitle(lv);
+      overlay.classList.add('active');
+      spawnParticles(window.innerWidth/2,window.innerHeight/2,80);
+      setTimeout(()=>overlay.classList.remove('active'),2500);
     }
-    
-    // ユーティリティ
-    function timeStringToMinutes(str) {
-      const parts = str.split(':');
-      if (parts.length !== 2) return 0;
-      const hours = parseInt(parts[0]) || 0;
-      const minutes = parseInt(parts[1]) || 0;
-      return hours * 60 + minutes;
+
+    // ===== AI ADVISOR =====
+    function initAIAdvisor(){
+      const grid=document.getElementById('aiSubjectGrid');
+      const aiSubjects=subjects.filter(s=>s!=='その他');
+      aiSubjects.forEach(s=>{
+        const btn=document.createElement('button');btn.className='ai-subject-btn';btn.textContent=s;
+        btn.onclick=function(){document.querySelectorAll('.ai-subject-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');showAIAdvice(s);};
+        grid.appendChild(btn);
+      });
+      updateAIProgress();
     }
-    
-    function minutesToTimeString(minutes) {
-      const hours = Math.floor(minutes / 60);
-      const mins = Math.floor(minutes % 60);
-      return `${pad(hours)}:${pad(mins)}`;
+    function showAIAdvice(subject){
+      const panel=document.getElementById('aiAdvicePanel');
+      const data=aiData[subject];if(!data){panel.innerHTML='';return;}
+      const mn=studyRecords.filter(r=>r.subject===subject).reduce((s,r)=>s+r.minutes,0);
+      const hr=(mn/60).toFixed(1),target=subjectTargets[subject]||0,pct=target>0?((mn/60)/target*100).toFixed(1):0;
+      let html='<div class="ai-advice-panel">';
+      html+='<h2 style="color:#ffd93d;margin-bottom:5px;">'+subject+'</h2>';
+      html+='<div style="display:flex;gap:20px;margin-bottom:20px;flex-wrap:wrap;"><div style="padding:12px 20px;background:rgba(233,69,96,0.15);border-radius:10px;border:1px solid rgba(233,69,96,0.3);"><span style="font-size:12px;color:rgba(255,255,255,0.5);">学習済み</span><div style="font-size:24px;font-weight:bold;color:#ffd93d;">'+hr+'h</div></div>';
+      if(target>0)html+='<div style="padding:12px 20px;background:rgba(16,185,129,0.15);border-radius:10px;border:1px solid rgba(16,185,129,0.3);"><span style="font-size:12px;color:rgba(255,255,255,0.5);">目標</span><div style="font-size:24px;font-weight:bold;color:#6ee7b7;">'+target+'h</div></div><div style="padding:12px 20px;background:rgba(96,165,250,0.15);border-radius:10px;border:1px solid rgba(96,165,250,0.3);"><span style="font-size:12px;color:rgba(255,255,255,0.5);">達成率</span><div style="font-size:24px;font-weight:bold;color:#93c5fd;">'+pct+'%</div></div>';
+      html+='</div>';
+      html+='<h3 style="color:#10b981;margin-bottom:15px;font-size:18px;">\u{1F4CB} 重要ポイント</h3>';
+      data.points.forEach((p,i)=>{html+='<div class="ai-point"><h4>ポイント'+(i+1)+'</h4><p>'+p+'</p></div>';});
+      html+='<div class="ai-tips"><h3>\u{1F4A1} 学習戦略</h3><p style="color:rgba(255,255,255,0.8);line-height:1.7;">'+data.strategy+'</p></div>';
+      // Progress-based advice
+      html+='<div class="ai-progress-advice"><h3 style="color:#e94560;margin-bottom:10px;">\u{1F3AF} あなたへのアドバイス</h3>';
+      if(mn===0)html+='<p style="color:rgba(255,255,255,0.8);line-height:1.7;">まだこの科目の学習を始めていません。まずは基本テキストを通読し、全体像を掴むことから始めましょう。最初は理解できなくても大丈夫です。繰り返し読むことで定着していきます。</p>';
+      else if(pct<25)html+='<p style="color:rgba(255,255,255,0.8);line-height:1.7;">学習を始めたばかりです。今は基本概念の理解に集中しましょう。条文の趣旨を理解することが重要です。暗記は後回しにして、まずは「なぜそのルールがあるのか」を考えながら読み進めてください。</p>';
+      else if(pct<50)html+='<p style="color:rgba(255,255,255,0.8);line-height:1.7;">基礎固めの段階です。過去問を解き始め、どこが出題されやすいかを把握しましょう。間違えた問題は必ず解説を読み、テキストの該当箇所に戻って確認する習慣をつけてください。</p>';
+      else if(pct<75)html+='<p style="color:rgba(255,255,255,0.8);line-height:1.7;">順調に進んでいます！応用問題や横断整理に取り組みましょう。他の科目との関連性を意識して学習すると、理解がさらに深まります。数字の暗記も本格的に始めてください。</p>';
+      else if(pct<100)html+='<p style="color:rgba(255,255,255,0.8);line-height:1.7;">仕上げの段階です。苦手な論点を集中的に復習し、本試験レベルの問題で実力を確認しましょう。時間を計って問題を解く練習も重要です。</p>';
+      else html+='<p style="color:rgba(255,255,255,0.8);line-height:1.7;">\u{1F389} 目標時間を達成しました！素晴らしいです。ここからは定期的な復習で知識を維持しつつ、他の科目とのバランスを意識しましょう。横断的な問題演習で総合力を高めてください。</p>';
+      html+='</div></div>';
+      panel.innerHTML=html;
     }
-    
-    function showMessage(msg, type) {
-      const msgEl = document.getElementById('message');
-      msgEl.textContent = msg;
-      msgEl.className = 'message ' + type;
+    function updateAIProgress(){
+      const panel=document.getElementById('aiGeneralAdvice');
+      const totalMin=studyRecords.reduce((s,r)=>s+r.minutes,0),totalHr=(totalMin/60).toFixed(1);
+      const today=new Date(),examDate=new Date('2026-08-23'),dte=Math.ceil((examDate-today)/864e5);
+      const combo=getCombo();
+      // Find weakest subject
+      let weakest='',weakPct=999;
+      subjects.forEach(s=>{if(subjectTargets[s]>0){const mn=studyRecords.filter(r=>r.subject===s).reduce((a,r)=>a+r.minutes,0);const p=(mn/60)/subjectTargets[s];if(p<weakPct){weakPct=p;weakest=s;}}});
+      let html='<div style="margin-top:25px;">';
+      html+='<h2 style="color:#10b981;margin-bottom:20px;">\u{1F916} 総合アドバイス</h2>';
+      html+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:15px;">';
+      // Time-period advice
+      if(dte>150)html+='<div class="ai-point"><h4>\u{1F4C5} 学習初期（基礎固め期）</h4><p>試験まで'+dte+'日あります。今は焦らず基礎を固める時期です。テキストの通読と基本問題の繰り返しを中心に。1日1科目に集中するより、2-3科目をローテーションすると飽きずに続けられます。</p></div>';
+      else if(dte>90)html+='<div class="ai-point"><h4>\u{1F4C5} 学習中期（実力養成期）</h4><p>試験まで'+dte+'日。過去問演習を本格化させましょう。間違えた問題のノートを作り、弱点を可視化することが重要です。横断整理で科目間の共通点・相違点を把握しましょう。</p></div>';
+      else if(dte>30)html+='<div class="ai-point"><h4>\u{1F4C5} 学習後期（仕上げ期）</h4><p>試験まで'+dte+'日。模擬試験で本番の時間配分を練習しましょう。苦手科目の克服と得意科目の確実な得点が鍵です。新しい教材には手を出さず、今ある教材を完璧にすることを優先。</p></div>';
+      else html+='<div class="ai-point"><h4>\u{1F4C5} 直前期</h4><p>試験まで'+dte+'日！体調管理を最優先に。新しいことを覚えるより、今まで学んだことの確認に時間を使いましょう。法改正情報の最終確認も忘れずに。</p></div>';
+      // Weak subject
+      if(weakest&&weakPct<0.5)html+='<div class="ai-point"><h4>\u26A0\uFE0F 優先すべき科目</h4><p>「'+weakest+'」の進捗が'+(weakPct*100).toFixed(0)+'%と最も遅れています。次の学習セッションでは、この科目に重点を置くことをおすすめします。</p></div>';
+      // Study tips
+      html+='<div class="ai-point"><h4>\u{1F4A1} 効果的な学習法</h4><p><strong>ポモドーロ法</strong>：25分集中→5分休憩のサイクルで集中力を維持。<br><strong>アクティブリコール</strong>：テキストを読むだけでなく、閉じてから思い出す練習を。<br><strong>スペースドリピティション</strong>：1日後→3日後→1週間後→2週間後と間隔を空けて復習。</p></div>';
+      html+='<div class="ai-point"><h4>\u{1F4F1} スキマ時間活用法</h4><p>通勤中：音声教材や一問一答アプリ<br>昼休み：過去問を3-5問解く<br>就寝前：今日学んだことの振り返り（10分）<br>朝起きてすぐ：前日の復習（記憶定着に最適）</p></div>';
+      if(combo>=3)html+='<div class="ai-point"><h4>\u{1F525} 連続'+combo+'日！素晴らしい！</h4><p>学習習慣が定着しています。この調子で続けましょう。「やる気があるから勉強する」のではなく「勉強するからやる気が出る」のです。習慣の力を信じてください。</p></div>';
+      html+='</div></div>';
+      panel.innerHTML=html;
     }
-    
-    function hideMessage() {
-      document.getElementById('message').className = 'message';
+
+    // ===== EXPORT =====
+    function exportSheet(){
+      let csv='\u65E5\u4ED8,\u66DC\u65E5,\u6B8B\u308A\u65E5\u6570,'+subjects.join(',')+',\u5F53\u65E5\u5408\u8A08\n';
+      const sd=new Date('2026-02-04'),ed=new Date('2026-08-23'),wd=['日','月','火','水','木','金','土'];
+      let cd=new Date(sd);while(cd<=ed){const dk=cd.toISOString().split('T')[0],w=wd[cd.getDay()],rem=Math.floor((ed-cd)/864e5);
+        let row=dk+','+w+','+rem,dt=0;subjects.forEach(s=>{const m=sheetData[dk]?.[s]||0;row+=','+minutesToTimeString(m);dt+=m;});
+        row+=','+minutesToTimeString(dt)+'\n';csv+=row;cd.setDate(cd.getDate()+1);}
+      downloadCSV(csv,'社労士試験_学習記録_横型.csv');
     }
+    function exportOriginalFormat(){
+      let csv='\u65E5\u4ED8,\u66DC\u65E5,\u6B8B\u308A\u65E5\u6570,\u79D1\u76EE,\u52C9\u5F37\u6642\u9593\n';
+      const sd=new Date('2026-02-04'),ed=new Date('2026-08-23'),wd=['日','月','火','水','木','金','土'];
+      let cd=new Date(sd);while(cd<=ed){const dk=cd.toISOString().split('T')[0],w=wd[cd.getDay()],rem=Math.floor((ed-cd)/864e5),dd=sheetData[dk]||{},hd=Object.values(dd).some(v=>v>0);
+        if(hd)subjects.forEach(s=>{const m=dd[s]||0;if(m>0)csv+=dk+','+w+','+rem+','+s+','+minutesToTimeString(m)+'\n';});
+        else csv+=dk+','+w+','+rem+',,\n';cd.setDate(cd.getDate()+1);}
+      downloadCSV(csv,'社労士試験_学習記録_縦型.csv');
+    }
+    function downloadCSV(csv,fn){const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download=fn;link.style.visibility='hidden';document.body.appendChild(link);link.click();document.body.removeChild(link);}
+
+    // ===== UTILS =====
+    function timeStringToMinutes(s){const p=s.split(':');if(p.length!==2)return 0;return(parseInt(p[0])||0)*60+(parseInt(p[1])||0);}
+    function minutesToTimeString(m){return pad(Math.floor(m/60))+':'+pad(Math.floor(m%60));}
+    function showMessage(msg,type){const e=document.getElementById('message');e.textContent=msg;e.className='message '+type;}
+    function hideMessage(){document.getElementById('message').className='message';}
   </script>
 </body>
 </html>
